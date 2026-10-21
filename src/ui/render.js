@@ -34,8 +34,9 @@ export function render(ctx) {
   renderChrome(ctx);
   if (!day.started) return;
   renderHero(ctx);
-  renderTimeline(ctx);
+  renderGlance(ctx);
   renderScreen(ctx);
+  renderTimeline(ctx);
   renderSteps(ctx);
   renderBreaks(ctx);
   renderWaterReminder(ctx);
@@ -256,11 +257,35 @@ function renderScreen(ctx) {
   $('screen-chip').className = `chip ${manual ? 'chip-manual' : 'chip-measured'}`;
   $('screen-chip').textContent = manual ? 'Manual' : 'Measured · this computer';
   const s = deskStats(day, now);
-  patch($('screen'), s
-    ? `<div class="big-number">${formatDuration(s.total)}</div>
-      <div class="big-sub">active on this computer today · longest stretch ${formatDuration(s.longest)}</div>
-      <p class="empty">${manual ? 'Based on when you told Daywell you were at your desk.' : 'Counted from keyboard, mouse and screen-lock signals while Daywell is open.'} Your phone, other devices and which apps you used aren't included.</p>`
-    : '<div class="big-number">No data</div><div class="big-sub">Nothing tracked yet today.</div>');
+  const note = `${manual ? 'Based on when you told Daywell you were at your desk.' : 'From keyboard, mouse and screen-lock signals while Daywell is open.'} Phone, other devices and per-app use aren't included.`;
+  patch($('screen'), `<div class="screen-row">
+      <div><div class="big-number">${s ? formatDuration(s.total) : 'No data'}</div>
+        <div class="big-sub">${s ? `active on this computer today · longest stretch ${formatDuration(s.longest)}` : 'Nothing tracked yet today.'}</div></div>
+      <p class="fineprint screen-note">${note}</p></div>`);
+}
+
+function tile(href, label, value, sub, pct) {
+  return `<a class="tile" href="${href}"><span class="tile-label">${label}</span><b class="tile-value">${value}</b>
+    ${pct == null ? '<span class="tile-bar tile-bar-empty"></span>' : `<span class="tile-bar"><span style="width:${Math.min(100, pct)}%"></span></span>`}
+    <span class="tile-sub">${sub}</span></a>`;
+}
+
+function renderGlance(ctx) {
+  const { day, settings, now } = ctx;
+  const s = deskStats(day, now);
+  const steps = latestSteps(day.steps);
+  const water = day.water.length ? waterTotal(day.water) : null;
+  const kcal = caloriesTotal(day.calories);
+  const n = day.breaks.length;
+  const tiles = [
+    tile('#breaks-card', 'Breaks', String(n), n ? 'small pauses add up' : 'none yet', null),
+    tile('#screen-card', 'Screen time', s ? formatDuration(s.total) : 'No data', day.mode === 'manual' ? 'manual' : 'measured · this computer', null),
+    tile('#steps-card', 'Steps', steps ? steps.total.toLocaleString() : 'No data', `goal ${settings.stepGoal.toLocaleString()}`, steps ? (steps.total / settings.stepGoal) * 100 : null),
+    tile('#water-card', 'Water', water == null ? 'No data' : `${water.toLocaleString()} ml`, `target ${settings.waterTargetMl.toLocaleString()} ml`, water == null ? null : (water / settings.waterTargetMl) * 100),
+  ];
+  if (settings.caloriesEnabled) tiles.push(tile('#cal-card', 'Calories', kcal == null ? 'No data' : `${kcal.toLocaleString()} kcal`, 'awareness only', null));
+  $('glance').classList.toggle('glance-5', tiles.length === 5);
+  patch($('glance'), tiles.join(''));
 }
 
 function renderSteps(ctx) {

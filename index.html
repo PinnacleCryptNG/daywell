@@ -66,9 +66,15 @@
         </div>
       </section>
 
-      <section class="card timeline-card" aria-labelledby="timeline-title">
+      <section class="glance" id="glance" aria-label="Today at a glance"></section>
+
+      <section class="card timeline-card" aria-labelledby="timeline-title" id="screen-card">
         <div class="card-head">
-          <h2 id="timeline-title">Today's timeline</h2>
+          <h2 id="timeline-title">Screen time &amp; timeline</h2>
+          <span class="chip" id="screen-chip"></span>
+        </div>
+        <div id="screen"></div>
+        <div class="card-head tl-head">
           <ul class="legend" aria-label="Legend">
             <li><span class="swatch swatch-desk"></span>At desk</li>
             <li><span class="swatch swatch-break"></span>Break</li>
@@ -79,10 +85,11 @@
         <div id="timeline"></div>
       </section>
 
-      <div class="grid">
-        <section class="card" aria-labelledby="screen-title" id="screen-card">
-          <div class="card-head"><h2 id="screen-title">Screen time</h2><span class="chip" id="screen-chip"></span></div>
-          <div id="screen"></div>
+      <div class="columns">
+        <div class="col">
+        <section class="card" aria-labelledby="breaks-title" id="breaks-card">
+          <div class="card-head"><h2 id="breaks-title">Breaks</h2><span class="chip" id="breaks-chip"></span></div>
+          <div id="breaks"></div>
         </section>
 
         <section class="card" aria-labelledby="steps-title" id="steps-card">
@@ -98,11 +105,9 @@
           </form>
         </section>
 
-        <section class="card" aria-labelledby="breaks-title" id="breaks-card">
-          <div class="card-head"><h2 id="breaks-title">Breaks</h2><span class="chip" id="breaks-chip"></span></div>
-          <div id="breaks"></div>
-        </section>
+        </div>
 
+        <div class="col">
         <section class="card" aria-labelledby="water-title" id="water-card">
           <div class="card-head"><h2 id="water-title">Water</h2><span class="chip">Manual</span></div>
           <div id="water-reminder" aria-live="polite"></div>
@@ -139,6 +144,7 @@
           </form>
           <div id="cal-list"></div>
         </section>
+        </div>
       </div>
 
       <div class="wrap-row"><button class="btn btn-soft" type="button" data-action="wrap-up" id="wrap-btn">Wrap up my day</button></div>
