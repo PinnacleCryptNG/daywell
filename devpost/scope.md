@@ -48,3 +48,7 @@ Open the app in Chrome, allow idle detection, and see the Today screen with a li
 - **Calorie targets and automatic estimates** — harm risk; the calorie log is manual, optional and target-free.
 - **Accounts, sync, backend** — local-first is enough for a single-user proof of concept.
 - **Native mobile app** — out of reach in the hackathon window and the desk is where the sitting happens.
+
+
+## Revision (learner decision, after user feedback)
+The manual step tracker is removed: a web app can't count steps, and typed-in steps added little. Time when Daywell is closed is shown explicitly as not tracked. Automatic phone screen time and steps (Health Connect / HealthKit) move to the post-hackathon roadmap as a native app.

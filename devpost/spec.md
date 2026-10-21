@@ -156,3 +156,7 @@ None at runtime. The font is self-hosted. No keys, no rate limits, no cost.
 - Implementation details (agent): vanilla JS/no build, pure engine with node tests, 60 s idle window, `away.since = now − 60 s`, demo speed via `?speed=`.
 - Genuine uncertainty: whether Idle Detection behaves as documented on the recording machine. Agreed investigation: slice 2 verifies permission prompt, `idle` after 60 s, and `locked` on screen lock in local Chrome; if it fails, Manual mode remains the working path and the video is adjusted.
 - Open from PRD: none further.
+
+
+## Revision (learner decision, after user feedback)
+The manual step tracker is removed: a web app can't count steps, and typed-in steps added little. Time when Daywell is closed is shown explicitly as not tracked. Automatic phone screen time and steps (Health Connect / HealthKit) move to the post-hackathon roadmap as a native app.

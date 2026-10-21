@@ -135,3 +135,7 @@ Weekly insights from stored days; calendar-aware quiet periods; desktop companio
 
 ## Open Questions
 - Idle Detection requires a user gesture and permission in Chrome/Edge; behaviour on the recording machine must be confirmed early in the build (does not block spec).
+
+
+## Revision (learner decision, after user feedback)
+The manual step tracker is removed: a web app can't count steps, and typed-in steps added little. Time when Daywell is closed is shown explicitly as not tracked. Automatic phone screen time and steps (Health Connect / HealthKit) move to the post-hackathon roadmap as a native app.

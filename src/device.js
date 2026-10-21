@@ -47,7 +47,7 @@ export function deviceAdvice({ browser, os, form, caps }) {
   }
   if (form !== 'desktop') {
     return { mode: 'manual', where, headline: 'Manual mode on this device',
-      detail: `Phones and tablets don't tell websites when you're at your desk, so here you tap when you step away and come back. For automatic breaks, open Daywell in Chrome or Edge on your computer.` };
+      detail: `Phones and tablets don't tell websites when you're at your desk, so on a phone Daywell is your break and water companion: tap when you step away and come back, and it only counts while it's open. For automatic breaks, open Daywell in Chrome or Edge on your computer.` };
   }
   return { mode: 'manual', where, headline: 'Manual mode in this browser',
     detail: `${browser} doesn't share idle signals with websites, so you tap when you step away and come back. For automatic breaks, use Chrome or Edge.` };

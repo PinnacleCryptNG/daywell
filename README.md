@@ -22,7 +22,6 @@ A calm browser companion for remote workers: it notices how long you've actually
 - **One gentle nudge at a time.** After about 50 minutes of continuous sitting, during work hours, capped per day. Done, snooze or pause for today.
 - **Screen time on this computer**, measured from the same signal. Phones, other devices and per-app usage are not included, and the app says so.
 - **Water**: one-tap logging plus reminders that count from your last glass and never pile up.
-- **Steps toward 10k**: you type the count from your phone (a browser can't count steps), labelled *Manual · from your phone*.
 - **Calories (optional)**: off by default, manual entries only, no targets.
 - **Honest numbers.** Every value is labelled *Measured*, *Manual* or *Reported*. Missing data shows as "No data", never as zero.
 
@@ -68,7 +67,7 @@ index.html, styles.css     page shell, icon sprite, themes, responsive layout
 src/sources/idle.js        Idle Detection adapter: "away" after 60 s without input or on screen lock
 src/sources/manual.js      manual fallback ("I'm stepping away" / "I'm at my desk")
 src/engine.js              pure desk-time logic: sitting stretches, breaks, prompts, snooze, work hours, cap
-src/water.js, habits.js    water log and reminder rule; steps and calories
+src/water.js, habits.js    water log and reminder rule; calories
 src/reflection.js          end-of-day summary
 src/device.js              browser/device detection and capability advice
 src/store.js               localStorage persistence, validated on load
@@ -91,7 +90,8 @@ tests/                     node --test suites
 
 - Measured mode needs desktop Chrome or Edge 94+; elsewhere it's manual.
 - Reminders need the tab open. Background tabs may deliver them up to about a minute late.
-- Screen time covers only this computer while Daywell is open.
+- Screen time covers only this computer while Daywell is open; time when it's closed shows as *not tracked*.
+- A browser can't count steps or read phone screen time, so neither is included. A native phone app is on the roadmap.
 
 ## Built with the Devpost Learn skill pack
 
@@ -99,7 +99,7 @@ Made for [Build With AI: Basics](https://learn-ai-basics.devpost.com/). The plan
 
 ## Not medical advice
 
-Daywell offers general wellbeing nudges and is not a medical device. Water and step targets are general estimates.
+Daywell offers general wellbeing nudges and is not a medical device. The water target is a general estimate.
 
 ## License
 

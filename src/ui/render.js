@@ -1,7 +1,7 @@
 import { canNudgeNow, effective, isBreakSegment, openSegment, sittingMs, status } from '../engine.js';
 import { formatClock, formatDuration, formatTimer, inWorkHours, MINUTE } from '../time.js';
 import { lastWaterAt, waterReminderNextAt, waterTotal } from '../water.js';
-import { caloriesTotal, latestSteps } from '../habits.js';
+import { caloriesTotal } from '../habits.js';
 import { summarize } from '../reflection.js';
 import { deviceAdvice, notificationAdvice } from '../device.js';
 import { measureExplain, rhythmSummary } from './settings.js';
@@ -45,7 +45,6 @@ export function render(ctx) {
   renderGlance(ctx);
   renderScreen(ctx);
   renderTimeline(ctx);
-  renderSteps(ctx);
   renderBreaks(ctx);
   renderWaterReminder(ctx);
   renderWater(ctx);
@@ -225,11 +224,13 @@ function renderTimeline(ctx) {
   }).join('');
   const nowLeft = ((now - start) / span) * 100;
   const untracked = Math.max(0, (now - start) - covered);
+  const closedNote = untracked >= 60_000
+    ? `<p class="closed-note">Daywell was closed or asleep for ${formatDuration(untracked)}, so that time isn't counted. Keep this tab open while you work.</p>` : '';
   const summary = `At desk ${formatDuration(desk)} · ${breaks} break${breaks === 1 ? '' : 's'} · not tracked ${untracked >= 1000 ? formatDuration(untracked) : 'none'}`;
   $('timeline').innerHTML = `
     <div class="tl-track" role="img" aria-label="Timeline since ${formatClock(start)}: ${summary}">${bars}<div class="tl-now" style="left:calc(${nowLeft.toFixed(3)}% - 1px)"></div></div>
     <div class="tl-axis"><span>${formatClock(start)}</span><span>${end > now ? formatClock(end) : 'now'}</span></div>
-    <p class="tl-summary">${summary}</p>`;
+    <p class="tl-summary">${summary}</p>${closedNote}`;
 }
 
 function renderBreaks(ctx) {
@@ -300,36 +301,17 @@ function tile({ href, ico, tone, label, value, sub, pct }) {
 function renderGlance(ctx) {
   const { day, settings, now } = ctx;
   const s = deskStats(day, now);
-  const steps = latestSteps(day.steps);
   const water = day.water.length ? waterTotal(day.water) : null;
   const kcal = caloriesTotal(day.calories);
   const n = day.breaks.length;
   const tiles = [
     { href: '#move', ico: 'break', tone: 'cyan', label: 'Breaks', value: String(n), sub: n ? 'small pauses add up' : 'none yet', pct: null },
     { href: '#screen-card', ico: 'screen', tone: 'blue', label: 'Screen', value: s ? formatDuration(s.total) : 'No data', sub: day.mode === 'manual' ? 'manual' : 'measured · this computer', pct: null },
-    { href: '#move', ico: 'steps', tone: 'violet', label: 'Steps', value: steps ? steps.total.toLocaleString() : 'No data', sub: `goal ${settings.stepGoal.toLocaleString()}`, pct: steps ? (steps.total / settings.stepGoal) * 100 : null },
     { href: '#water', ico: 'drop', tone: 'cyan', label: 'Water', value: water == null ? 'No data' : `${water.toLocaleString()} ml`, sub: `target ${settings.waterTargetMl.toLocaleString()} ml`, pct: water == null ? null : (water / settings.waterTargetMl) * 100 },
   ];
   if (settings.caloriesEnabled) tiles.push({ href: '#water', ico: 'flame', tone: 'amber', label: 'Calories', value: kcal == null ? 'No data' : `${kcal.toLocaleString()} kcal`, sub: 'awareness only', pct: null });
   $('glance').classList.toggle('glance-5', tiles.length === 5);
   patch($('glance'), tiles.map(tile).join(''));
-}
-
-function renderSteps(ctx) {
-  const { day, settings } = ctx;
-  const goal = settings.stepGoal;
-  const last = latestSteps(day.steps);
-  const ratio = last ? Math.min(1, last.total / goal) : 0;
-  const ring = `<div class="mini-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/>
-    <circle class="fill" cx="50" cy="50" r="44" stroke-dasharray="${MINI.toFixed(2)}" stroke-dashoffset="${(MINI * (1 - ratio)).toFixed(2)}"/></svg>${icon('steps')}</div>`;
-  if (!last) {
-    patch($('steps-summary'), `<div class="steps-hero">${ring}<div><div class="big-number">No data</div><div class="big-sub">Goal ${goal.toLocaleString()} steps. Type today's count from your phone below.</div></div></div>`);
-    return;
-  }
-  patch($('steps-summary'), `<div class="steps-hero">${ring}<div>
-    <div class="big-number">${last.total.toLocaleString()} <span class="big-sub">of ${goal.toLocaleString()}</span></div>
-    <div class="big-sub">${last.total >= goal ? 'Goal reached. Nicely done.' : `${(goal - last.total).toLocaleString()} to go`} · updated ${formatClock(last.at)}</div>
-    <button class="btn-link" type="button" data-action="steps-undo" data-id="${last.id}">Undo update</button></div></div>`);
 }
 
 function renderWaterReminder(ctx) {
@@ -384,7 +366,6 @@ function renderReflection(ctx) {
       <div class="stat"><b>${s.breaks}</b><span>breaks${s.bySource.measured ? ` · ${s.bySource.measured} measured` : ''}</span></div>
       <div class="stat"><b>${formatDuration(s.longestMs)}</b><span>longest sitting stretch</span></div>
       <div class="stat"><b>${formatDuration(s.deskMs)}</b><span>${day.mode === 'manual' ? 'screen time (manual)' : 'screen time · measured'}</span></div>
-      <div class="stat"><b>${s.steps == null ? 'No data' : s.steps.toLocaleString()}</b><span>steps · from your phone</span></div>
       <div class="stat"><b>${s.waterMl == null ? 'No data' : `${s.waterMl.toLocaleString()} ml`}</b><span>water logged</span></div>
     </div>
     <p>${s.waterLine} Time when Daywell wasn't open isn't counted either way.</p>

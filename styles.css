@@ -399,6 +399,7 @@ button, input, select { font: inherit; color: inherit; }
 .entry input, .times input { min-height: 46px; flex: 1 1 110px; min-width: 0; max-width: 220px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card-2); font-size: 16px; transition: border-color var(--ease), box-shadow var(--ease); }
 .entry input.grow-input { flex: 2 1 160px; max-width: none; }
 .entry input:focus, .times input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 18%, transparent); }
+.closed-note { margin-top: 10px; padding: 10px 14px; border-radius: 12px; background: var(--amber-soft); color: var(--amber); font-size: .88rem; font-weight: 600; }
 .field-error { color: var(--danger); font-size: .85rem; min-height: 1.2em; margin-top: 4px; }
 
 .wrap-row { display: flex; justify-content: center; }

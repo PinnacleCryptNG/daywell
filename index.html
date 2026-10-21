@@ -85,7 +85,7 @@
             <div class="mock-tiles">
               <span><svg class="i"><use href="#i-break"/></svg><b>4</b>breaks</span>
               <span><svg class="i"><use href="#i-drop"/></svg><b>1.2 L</b>water</span>
-              <span><svg class="i"><use href="#i-steps"/></svg><b>7,412</b>steps</span>
+              <span><svg class="i"><use href="#i-screen"/></svg><b>3h 12m</b>screen</span>
             </div>
           </div>
           <div class="float f1"><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><div><b>Welcome back!</b><small>Break logged · 6 min away</small></div></div>
@@ -117,7 +117,7 @@
           <article class="bento-card big" data-reveal><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><h3>Breaks that count themselves</h3><p>Lock your screen or wander off for a coffee and Daywell credits the break automatically.</p><div class="bento-art art-timeline"><i></i><i></i><i></i><i></i><i></i></div></article>
           <article class="bento-card" data-reveal><span class="ico ico-blue"><svg class="i"><use href="#i-screen"/></svg></span><h3>Honest screen time</h3><p>Your real active time on this computer. No guessing.</p></article>
           <article class="bento-card" data-reveal><span class="ico ico-cyan"><svg class="i"><use href="#i-drop"/></svg></span><h3>Water that reminds you</h3><p>One tap per glass, plus gentle reminders that never pile up.</p></article>
-          <article class="bento-card" data-reveal><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span><h3>Steps toward 10k</h3><p>Pop in the number from your phone and watch the ring fill.</p></article>
+          <article class="bento-card" data-reveal><span class="ico ico-violet"><svg class="i"><use href="#i-device"/></svg></span><h3>On your phone too</h3><p>Log breaks and water on the go, and add it to your home screen.</p></article>
           <article class="bento-card" data-reveal><span class="ico ico-amber"><svg class="i"><use href="#i-flame"/></svg></span><h3>Calories, if you like</h3><p>Off by default. No targets, no judgment, ever.</p></article>
         </div>
       </section>
@@ -130,7 +130,7 @@
           <div class="honest-chips"><span class="chip chip-measured">Measured · this computer</span><span class="chip chip-manual">Manual · from your phone</span><span class="chip chip-reported">Reported</span><span class="chip">No data</span></div>
         </div>
         <div class="honest-card" data-reveal>
-          <div class="hc-row"><span>Steps today</span><s>0</s><b>No data</b></div>
+          <div class="hc-row"><span>While Daywell was closed</span><s>0 min</s><b>Not tracked</b></div>
           <div class="hc-row"><span>Screen time</span><b>3 h 12 min</b><span class="chip chip-measured">Measured</span></div>
           <div class="hc-row"><span>Water</span><b>1,250 ml</b><span class="chip chip-manual">Manual</span></div>
         </div>
@@ -203,23 +203,11 @@
       </section>
 
       <section class="view" id="view-move" data-view="move" aria-labelledby="move-title" hidden>
-        <header class="view-head"><h1 id="move-title">Move</h1><p>Breaks Daywell noticed, and your steps toward today's goal.</p></header>
+        <header class="view-head"><h1 id="move-title">Move</h1><p>Every break Daywell noticed today, and where each one came from.</p></header>
         <div class="columns">
           <section class="card" aria-labelledby="breaks-title" id="breaks-card">
             <div class="card-head"><h2 id="breaks-title"><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span>Breaks</h2><span class="chip" id="breaks-chip"></span></div>
             <div id="breaks"></div>
-          </section>
-          <section class="card" aria-labelledby="steps-title" id="steps-card">
-            <div class="card-head"><h2 id="steps-title"><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span>Steps</h2><span class="chip chip-manual">Manual · from your phone</span></div>
-            <div id="steps-summary"></div>
-            <form class="entry" id="steps-form">
-              <label for="steps-input">Steps so far today (check your phone)</label>
-              <div class="inline">
-                <input id="steps-input" name="total" type="number" inputmode="numeric" min="0" max="100000" step="1" placeholder="e.g. 4200" autocomplete="off">
-                <button class="btn btn-primary" type="submit">Update</button>
-              </div>
-              <p class="field-error" id="steps-error" role="alert"></p>
-            </form>
           </section>
         </div>
       </section>
@@ -338,12 +326,7 @@
           </section>
 
           <section class="card setting-card">
-            <h2><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span>Steps &amp; calories</h2>
-            <div class="field">
-              <div class="field-row"><label for="s-steps">Daily step goal</label><output for="s-steps" data-out="stepGoal"></output></div>
-              <input id="s-steps" name="stepGoal" type="range" min="2000" max="20000" step="500">
-              <p class="hint">A browser can't count steps, so you type the number from your phone.</p>
-            </div>
+            <h2><span class="ico ico-amber"><svg class="i"><use href="#i-flame"/></svg></span>Calories</h2>
             <label class="switch-row"><span><strong>Calorie log</strong><span class="hint">Off by default. Awareness only: no targets, no judgment.</span></span><input type="checkbox" name="caloriesEnabled" role="switch" class="switch"></label>
           </section>
 

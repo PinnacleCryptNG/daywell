@@ -3,7 +3,6 @@ const THEMES = ['system', 'light', 'dark'];
 const OUT = {
   thresholdMin: (v) => `${v} min`,
   waterTargetMl: (v) => `${Number(v).toLocaleString()} ml`,
-  stepGoal: (v) => `${Number(v).toLocaleString()} steps`,
 };
 
 export function syncOutputs(form) {
@@ -19,7 +18,6 @@ export function fillSettings(form, settings) {
   form.waterTargetMl.value = String(settings.waterTargetMl);
   form.waterReminderMin.value = String(settings.waterReminderMin);
   form.waterReminderCap.value = String(settings.waterReminderCap);
-  form.stepGoal.value = String(settings.stepGoal);
   form.caloriesEnabled.checked = settings.caloriesEnabled;
   form.theme.value = settings.theme;
   document.getElementById('work-days').innerHTML = [1, 2, 3, 4, 5, 6, 0].map((d) => `
@@ -43,7 +41,6 @@ export function readSettings(form, previous) {
     waterTargetMl: num(form.waterTargetMl.value, 250, 6000, previous.waterTargetMl),
     waterReminderMin: num(form.waterReminderMin.value, 0, 240, previous.waterReminderMin),
     waterReminderCap: num(form.waterReminderCap.value, 1, 12, previous.waterReminderCap),
-    stepGoal: num(form.stepGoal.value, 1000, 50000, previous.stepGoal),
     caloriesEnabled: form.caloriesEnabled.checked,
     theme: THEMES.includes(form.theme.value) ? form.theme.value : previous.theme,
   };

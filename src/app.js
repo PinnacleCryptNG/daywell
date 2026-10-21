@@ -2,7 +2,7 @@ import { canNudgeNow, createDay, normalizeDay, openSegment, reduce, status } fro
 import { DEFAULT_SETTINGS, clearData, exportBlob, loadData, saveData } from './store.js';
 import { dateKey } from './time.js';
 import { addWater, editWater, removeWater, validAmount, waterReminderDue } from './water.js';
-import { addCalories, removeEntry, setSteps, validKcal, validSteps } from './habits.js';
+import { addCalories, removeEntry, validKcal } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
 import { createManualSource } from './sources/manual.js';
 import { VIEWS, render } from './ui/render.js';
@@ -295,11 +295,6 @@ const actions = {
     persist();
     draw();
   },
-  'steps-undo': (el) => {
-    day = { ...day, steps: removeEntry(day.steps, el.dataset.id) };
-    persist();
-    draw();
-  },
   'cal-delete': (el) => {
     const removed = day.calories.find((c) => c.id === el.dataset.id);
     day = { ...day, calories: removeEntry(day.calories, el.dataset.id) };
@@ -368,22 +363,6 @@ document.getElementById('water-custom').addEventListener('submit', (e) => {
   err.textContent = '';
   input.value = '';
   logWater(ml);
-});
-
-document.getElementById('steps-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const input = e.target.total;
-  const total = Number(input.value);
-  const err = document.getElementById('steps-error');
-  if (input.value === '' || !validSteps(total)) {
-    err.textContent = 'Enter a whole number between 0 and 100,000.';
-    return;
-  }
-  err.textContent = '';
-  input.value = '';
-  day = { ...day, steps: setSteps(day.steps, total, Date.now()).entries };
-  persist();
-  draw();
 });
 
 document.getElementById('cal-form').addEventListener('submit', (e) => {
