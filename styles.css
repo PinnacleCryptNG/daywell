@@ -88,7 +88,7 @@ button, input, select { font: inherit; color: inherit; }
 .tabs a[aria-current='page'] .i { color: var(--cyan); }
 .tabs .i { width: 18px; height: 18px; }
 
-.demo-banner { background: linear-gradient(90deg, rgba(34, 211, 238, .16), rgba(49, 87, 255, .14)); color: var(--cyan-deep); text-align: center; font-weight: 700; font-size: .85rem; padding: 8px 16px; }
+.demo-banner { position: relative; background: linear-gradient(90deg, rgba(34, 211, 238, .16), rgba(49, 87, 255, .14)); color: var(--cyan-deep); text-align: center; font-weight: 700; font-size: .85rem; padding: 8px 16px; }
 .demo-banner a { color: inherit; }
 
 .page { max-width: 1120px; margin: 0 auto; padding: 28px 24px 64px; }
@@ -173,7 +173,7 @@ button, input, select { font: inherit; color: inherit; }
 .shimmer::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .45) 50%, transparent 70%); transform: translateX(-120%); animation: shimmer 3.6s ease-in-out infinite 1.2s; }
 @keyframes shimmer { 40%, 100% { transform: translateX(120%); } }
 .cta-start:hover { transform: translateY(-2px) scale(1.02); }
-.lp-trust { list-style: none; margin: 22px 0 0; padding: 0; display: flex; gap: 8px 18px; flex-wrap: wrap; color: #A9B5D3; font-size: .9rem; font-weight: 600; }
+.lp-trust { list-style: none; margin: 22px 0 0; padding: 0; display: flex; gap: 8px 18px; flex-wrap: wrap; color: #DCE3F5; font-size: .9rem; font-weight: 600; }
 .lp-trust li { display: inline-flex; align-items: center; gap: 6px; }
 .lp-trust .i { width: 16px; height: 16px; color: var(--cyan); }
 
@@ -389,7 +389,7 @@ button, input, select { font: inherit; color: inherit; }
 .water-summary { flex: 1; min-width: 200px; }
 .water-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
 .water-presets .btn { flex-direction: column; gap: 0; min-height: 58px; font-size: 1.05rem; line-height: 1.1; }
-.water-presets small { font-size: .72rem; font-weight: 700; opacity: .8; }
+.water-presets small { font-size: .72rem; font-weight: 700; }
 .next-line { margin-top: 14px; font-size: .86rem; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 /* Entry forms */

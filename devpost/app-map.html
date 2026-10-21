@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daywell · App map</title>
+<style>
+  :root { --navy:#0B1020; --blue:#3157FF; --cyan:#22D3EE; --ink:#0F172A; --muted:#5B6880; --line:#E3E8F1; --bg:#F3F6FC; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { background: var(--navy); color: #F8FAFC; border-radius: 24px; padding: 28px; }
+  header p { color: #C9D3F0; margin: 8px 0 0; }
+  h1 { margin: 0; font-size: 1.9rem; letter-spacing: -0.02em; }
+  h2 { margin: 36px 0 12px; font-size: 1.3rem; }
+  section, .card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-top: 16px; }
+  code { font: .9em ui-monospace, SFMono-Regular, Menlo, monospace; background: #EEF2FF; padding: 1px 6px; border-radius: 6px; }
+  pre { background: var(--navy); color: #E8EDF8; padding: 14px 16px; border-radius: 12px; overflow-x: auto; font-size: .85rem; }
+  pre code { background: none; padding: 0; color: inherit; }
+  ol.route > li { margin-bottom: 14px; }
+  .muted { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: left; padding: 10px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); border-top: 0; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-weight: 700; }
+  summary:focus-visible, a:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+  svg { width: 100%; height: auto; display: block; }
+  .tag { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #E0F9FD; color: #0E7490; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Daywell app map</h1>
+    <p>A calm browser companion for desk workers. It measures real time at the desk, credits breaks automatically when you step away, and keeps every number honest: measured, manual, reported, or "No data".</p>
+  </header>
+
+  <h2>The main pieces</h2>
+  <section>
+    <ul>
+      <li><strong>Signal sources</strong> tell Daywell whether you're at the desk: <code>src/sources/idle.js</code> (Chrome/Edge idle detection) or <code>src/sources/manual.js</code> (the "I'm stepping away / at my desk" buttons).</li>
+      <li><strong>The engine</strong>, <code>src/engine.js</code>, is pure logic: events in, a new day record out. It owns sitting stretches, breaks, prompts, snooze, pause, work hours and the daily cap.</li>
+      <li><strong>Helpers</strong>: <code>src/water.js</code> (water log and reminder rule), <code>src/habits.js</code> (steps, calories), <code>src/reflection.js</code> (end-of-day summary), <code>src/device.js</code> (what this browser can do).</li>
+      <li><strong>Storage</strong>, <code>src/store.js</code>, keeps everything in this browser's <code>localStorage</code> and validates it on load. No server.</li>
+      <li><strong>The interface</strong>: <code>index.html</code> + <code>styles.css</code> for structure and look, <code>src/ui/render.js</code> draws the views, <code>src/app.js</code> wires it all together on a 1-second tick.</li>
+    </ul>
+  </section>
+
+  <h2>One action, end to end: walk away and the break logs itself</h2>
+  <section>
+    <svg viewBox="0 0 900 230" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">Break detection flow</title>
+      <desc id="flow-desc">You step away; the idle source emits away and active events; app.js passes them to the engine's reduce function; the engine logs a measured break; store.js saves it; render.js shows "Welcome back, break logged".</desc>
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5B6880"/></marker></defs>
+      <g font-family="system-ui, sans-serif" font-size="14">
+        <rect x="10" y="20" width="150" height="70" rx="14" fill="#0B1020"/><text x="85" y="50" fill="#fff" text-anchor="middle" font-weight="700">You step away</text><text x="85" y="70" fill="#93A3C8" text-anchor="middle" font-size="12">no input for 60 s / lock</text>
+        <rect x="200" y="20" width="160" height="70" rx="14" fill="#E0F9FD" stroke="#22D3EE"/><text x="280" y="50" text-anchor="middle" font-weight="700">idle.js</text><text x="280" y="70" text-anchor="middle" font-size="12" fill="#0E7490">report() → away / active</text>
+        <rect x="400" y="20" width="160" height="70" rx="14" fill="#E8EDFF" stroke="#3157FF"/><text x="480" y="50" text-anchor="middle" font-weight="700">app.js</text><text x="480" y="70" text-anchor="middle" font-size="12" fill="#2443D6">onSignal → dispatch</text>
+        <rect x="600" y="20" width="170" height="70" rx="14" fill="#E8EDFF" stroke="#3157FF"/><text x="685" y="50" text-anchor="middle" font-weight="700">engine.js</text><text x="685" y="70" text-anchor="middle" font-size="12" fill="#2443D6">reduce → onActive → logBreak</text>
+        <rect x="400" y="140" width="160" height="70" rx="14" fill="#fff" stroke="#E3E8F1"/><text x="480" y="170" text-anchor="middle" font-weight="700">store.js</text><text x="480" y="190" text-anchor="middle" font-size="12" fill="#5B6880">saveData → localStorage</text>
+        <rect x="600" y="140" width="170" height="70" rx="14" fill="#0B1020"/><text x="685" y="170" fill="#fff" text-anchor="middle" font-weight="700">render.js</text><text x="685" y="190" fill="#93A3C8" text-anchor="middle" font-size="12">"Welcome back. Break logged"</text>
+        <path d="M160 55H195M360 55H395M560 55H595" stroke="#5B6880" stroke-width="2" marker-end="url(#a)"/>
+        <path d="M685 90V135" stroke="#5B6880" stroke-width="2" marker-end="url(#a)"/>
+        <path d="M600 110H480V135" stroke="#5B6880" stroke-width="2" fill="none" marker-end="url(#a)"/>
+      </g>
+    </svg>
+  </section>
+
+  <h2>Reference route <span class="tag">3 stops</span></h2>
+  <p class="muted">Open the files in your editor and search for the anchor in each stop.</p>
+  <section>
+    <ol class="route">
+      <li><strong><code>src/sources/idle.js</code>, search <code>const report</code></strong><br>
+        The browser fires a <code>change</code> event when you stop using the keyboard and mouse for 60 s or lock the screen. <code>report()</code> turns that into an <code>away</code> event, with <code>since</code> set 60 s earlier because that's when input actually stopped.</li>
+      <li><strong><code>src/engine.js</code>, search <code>function onActive</code> and <code>function logBreak</code></strong><br>
+        When you come back, the engine closes the away segment. If it lasted at least the minimum break (2 min by default), <code>logBreak</code> records a measured break, hides any break prompt, and sets the "Welcome back" notice. Shorter gaps merge back into desk time.</li>
+      <li><strong><code>src/ui/render.js</code>, search <code>Welcome back.</code></strong><br>
+        <code>renderHero</code> reads <code>day.notice</code> and shows the card with "Undo, I was here". The saved record lives in <code>localStorage</code> via <code>persist()</code> in <code>src/app.js</code>.</li>
+    </ol>
+    <details>
+      <summary>The test that pins this behavior</summary>
+      <p><code>tests/engine.test.js</code>: <em>"away period at or above the minimum logs a measured break and resets the clock"</em>, plus <em>"away period shorter than the minimum is merged back into desk time"</em>. Run <code>npm test</code>.</p>
+    </details>
+  </section>
+
+  <h2>To change this, start here</h2>
+  <section>
+    <table>
+      <tr><th>You want to change…</th><th>Start here</th></tr>
+      <tr><td>The landing headline or copy</td><td><code>index.html</code>, search <code>welcome-title</code> and the <code>lp-section</code> blocks</td></tr>
+      <tr><td>The break ideas in the nudge</td><td><code>src/ui/render.js</code>, <code>SUGGESTIONS</code></td></tr>
+      <tr><td>Default threshold, water target, step goal</td><td><code>src/store.js</code>, <code>DEFAULT_SETTINGS</code> (and limits in <code>LIMITS</code>)</td></tr>
+      <tr><td>When water reminders fire</td><td><code>src/water.js</code>, <code>waterReminderDue</code>; tests in <code>tests/water.test.js</code></td></tr>
+      <tr><td>Whether nudges respect work hours</td><td><code>src/engine.js</code>, <code>canNudgeNow</code></td></tr>
+      <tr><td>Colors, spacing, dark mode</td><td><code>styles.css</code>, the <code>:root</code> and <code>[data-theme='dark']</code> variables</td></tr>
+      <tr><td>What counts as Measured vs Manual on a device</td><td><code>src/device.js</code>, <code>deviceAdvice</code></td></tr>
+    </table>
+  </section>
+
+  <h2>A practice to reuse</h2>
+  <section>
+    <p><strong>Turn a wish into an observable rule, then pin it with a test.</strong> The original concept said "count steps, calories and screen time". Rather than building features the browser can't honestly support, the PRD turned that into a rule you can check: <em>missing data is shown as "No data", never as zero</em>. That rule became code (<code>caloriesTotal</code> and <code>latestSteps</code> return <code>null</code>, which the UI shows as "No data") and tests (<code>tests/reflection.test.js</code>: <em>empty day says "No data", never zero</em>; <code>tests/habits.test.js</code>).</p>
+    <p>The same move fixed a real bug. "I didn't get any reminder" was vague. Investigating showed reminders were held outside 09:00–17:00 without saying so. That became an explicit rule, <code>canNudgeNow</code>: nudge during work hours, or when demo speed is on, or when the person chose "Remind me anyway today". It's pinned by the test <em>nudges outside work hours only when overridden for today or in demo speed</em>.</p>
+    <p class="muted">On your next project, when you prompt an agent, describe the outcome someone could observe ("shows No data", "explains why reminders are on hold") instead of the feature name. It's easier for the agent to build and easier for you to check.</p>
+  </section>
+
+  <h2>Run it again</h2>
+  <section>
+    <pre><code>npm start   # http://localhost:5173
+npm test    # 32 unit tests
+# demo speed for recording: http://localhost:5173/?speed=60</code></pre>
+    <p class="muted">This map is a snapshot of the code after commit <code>768db49</code> plus the accessibility fixes committed with it. It can drift as the code changes.</p>
+  </section>
+</main>
+</body>
+</html>
