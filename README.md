@@ -1,47 +1,104 @@
-# Daywell
+<p align="center"><img src="assets/logo.svg" width="72" height="72" alt="Daywell logo"></p>
 
-A calm desktop-browser break companion for remote workers. Daywell measures how long you've **actually** been at your desk (using the browser's idle signal, not a fixed timer), credits a break automatically when you step away, and suggests one small break at a time. Every number is labelled by where it came from: measured, manual, or reported. Missing data is never shown as zero.
+<h1 align="center">Daywell</h1>
 
-Alongside the break companion:
-- **Screen time on this computer**: today's active time, measured from the same idle signal. Phones, other devices and per-app usage aren't included.
+<p align="center"><strong>Breaks based on real desk time, not a timer.</strong><br>
+A calm browser companion for remote workers: it notices how long you've actually been sitting, nudges you to move and drink water, and keeps every number honest.</p>
+
+<p align="center">
+  <a href="https://github.com/PinnacleCryptNG/daywell/actions/workflows/ci.yml"><img src="https://github.com/PinnacleCryptNG/daywell/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3157FF" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/dependencies-0-22D3EE" alt="Zero runtime dependencies">
+</p>
+
+<p align="center"><img src="docs/screenshots/landing-desktop.png" alt="Daywell landing page" width="820"></p>
+
+## What it does
+
+- **Measured desk time.** In Chrome or Edge, Daywell uses the browser's [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API) (keyboard, mouse and screen lock, with your permission) to know when you're really at the desk.
+- **Breaks log themselves.** Step away for 2+ minutes and come back: the break is already logged with its real length. "Undo, I was here" fixes the rare false positive.
+- **One gentle nudge at a time.** After about 50 minutes of continuous sitting, during work hours, capped per day. Done, snooze or pause for today.
+- **Screen time on this computer**, measured from the same signal. Phones, other devices and per-app usage are not included, and the app says so.
+- **Water**: one-tap logging plus reminders that count from your last glass and never pile up.
 - **Steps toward 10k**: you type the count from your phone (a browser can't count steps), labelled *Manual · from your phone*.
-- **Water**: one-tap logging plus gentle reminders, capped per day and never shown on top of a break suggestion.
 - **Calories (optional)**: off by default, manual entries only, no targets.
+- **Honest numbers.** Every value is labelled *Measured*, *Manual* or *Reported*. Missing data shows as "No data", never as zero.
 
-Built for [Build With AI: Basics](https://learn-ai-basics.devpost.com/) with the Devpost Learn skill pack. The planning documents are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md), [build checklist](devpost/checklist.md).
+On phones, Safari and Firefox (no idle detection), Daywell detects the browser and device and switches to a clearly explained manual mode.
 
-## Run it
+<p align="center">
+  <img src="docs/screenshots/landing-phone.png" alt="Landing page on a phone" width="240">
+  <img src="docs/screenshots/hydrate-phone.png" alt="Hydrate tab on a phone" width="240">
+</p>
 
-Requires Node.js 18+. Measured mode needs desktop Chrome or Edge; every other browser, including phones, gets a clearly labelled manual mode.
+<p align="center"><img src="docs/screenshots/today-desktop.png" alt="Today view on desktop" width="820"></p>
+
+## Run it locally
+
+Requires Node.js 18+. There are no npm dependencies to install.
 
 ```sh
-npm start        # serves on http://localhost:5173
-npm test         # engine, water, habits, reflection, time, store and device tests
+git clone https://github.com/PinnacleCryptNG/daywell.git
+cd daywell
+npm start        # http://localhost:5173
+npm test         # 32 unit tests
 ```
 
-Open `http://localhost:5173`, press **Start my day**, and allow idle detection. If you decline, or your browser doesn't support it, Daywell switches to a clearly labelled manual mode.
+Open `http://localhost:5173`, press **Start my day**, and allow idle detection when asked. Measured mode needs `localhost` or HTTPS; opening `index.html` straight from disk won't enable it.
 
-**Demo speed:** `http://localhost:5173/?speed=60` makes break thresholds run 60× faster (a 50-minute threshold takes 50 seconds) for recording. A banner shows while it's on. Idle detection and every measured duration stay real.
+**Demo speed:** `http://localhost:5173/?speed=60` runs break and reminder thresholds 60× faster (50 minutes takes 50 seconds) for recording. A banner shows while it's on. Idle detection and measured durations stay real.
 
-## How it works
+## Deploy
 
-- `src/sources/idle.js`: wraps the [Idle Detection API](https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API). It reports "away" after 60 s without keyboard/mouse input, or when the screen locks.
-- `src/engine.js`: pure, tested desk-time logic covering sitting stretches, automatic break credit, prompts, snooze/pause, work hours and the daily cap.
-- `src/store.js`: saves everything to `localStorage` in this browser only. Time when the page wasn't open is shown as *not tracked*.
-- `src/device.js`: recognises the browser and device and checks what it can actually do, so phones and other browsers get honest guidance instead of a broken feature.
-- `src/ui/`: renders the four views (Today, Move, Hydrate, You) and the "Your rhythm" preferences.
+Daywell is a static site with no build step.
+
+- **Vercel:** import the repository, keep the default settings (no framework, no build command, output directory `.`). [`vercel.json`](vercel.json) adds the security headers.
+- **Any static host** (GitHub Pages, Netlify, Cloudflare Pages) works too; serve the repository root over HTTPS.
+
+No environment variables or secrets are needed.
+
+## How it's built
+
+Plain HTML, CSS and JavaScript modules. No framework, no build, no runtime dependencies.
+
+```
+index.html, styles.css     page shell, icon sprite, themes, responsive layout
+src/sources/idle.js        Idle Detection adapter: "away" after 60 s without input or on screen lock
+src/sources/manual.js      manual fallback ("I'm stepping away" / "I'm at my desk")
+src/engine.js              pure desk-time logic: sitting stretches, breaks, prompts, snooze, work hours, cap
+src/water.js, habits.js    water log and reminder rule; steps and calories
+src/reflection.js          end-of-day summary
+src/device.js              browser/device detection and capability advice
+src/store.js               localStorage persistence, validated on load
+src/ui/                    view rendering and the "Your rhythm" preferences
+sw.js                      service worker: offline cache and notifications
+tests/                     node --test suites
+```
+
+[`devpost/app-map.html`](devpost/app-map.html) traces one action (walk away → break logged) through the code.
 
 ## Privacy and security
 
-- No accounts, no server, no analytics, no third-party scripts or fonts.
+- No accounts, no server, no analytics, no third-party scripts or fonts. Everything stays in this browser's storage; export or delete it from the **You** tab.
 - A strict Content-Security-Policy allows scripts only from this site and blocks inline scripts.
 - Saved data is validated when it loads; malformed or tampered entries are dropped, and anything you type is escaped before it's shown.
-- Works offline after the first visit (service worker) and can be installed to the home screen.
+- Works offline after the first visit and can be installed to the home screen.
+- Accessibility: no issues in an axe WCAG 2.1 AA scan; Lighthouse 98–100 for performance, accessibility, best practices and SEO. Animations respect reduced-motion settings.
+
+## Limitations
+
+- Measured mode needs desktop Chrome or Edge 94+; elsewhere it's manual.
+- Reminders need the tab open. Background tabs may deliver them up to about a minute late.
+- Screen time covers only this computer while Daywell is open.
+
+## Built with the Devpost Learn skill pack
+
+Made for [Build With AI: Basics](https://learn-ai-basics.devpost.com/). The planning documents are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md) and the [build checklist](devpost/checklist.md).
 
 ## Not medical advice
 
-Daywell offers general wellbeing nudges and is not a medical device.
+Daywell offers general wellbeing nudges and is not a medical device. Water and step targets are general estimates.
 
 ## License
 
-[MIT](LICENSE). Manrope font: SIL Open Font License ([`assets/fonts/OFL.txt`](assets/fonts/OFL.txt)).
+[MIT](LICENSE). The Manrope font is licensed under the SIL Open Font License ([`assets/fonts/OFL.txt`](assets/fonts/OFL.txt)).

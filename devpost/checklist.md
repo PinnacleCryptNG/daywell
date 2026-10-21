@@ -101,31 +101,33 @@ Build mode: fast — learner asked to minimise back-and-forth ("Do everything yo
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (kernel working)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — after slice 2 (kernel working)
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
 - [x] Layout: nothing overlaps; even columns at laptop widths; no sideways scroll on phones
-- [ ] Mobile-first: bottom tab bar (Today / Move / Hydrate / You), 44 px tap targets, 16 px inputs, safe areas; phones fall back to Manual mode with an explanation
-- [ ] Brand kit: logo mark, favicon (SVG + ICO), app icons incl. maskable and Apple touch, web manifest, social preview image, custom icon set
-- [ ] Settings replaced by "Your rhythm": sliders, segmented choices, steppers, switch, live plain-language summary, This device, Privacy & data
-- [ ] Visual redesign: dark hero with glowing ring, at-a-glance tiles, animated water drop, steps ring, dark mode, reduced motion respected
-- [ ] Security and browser awareness: strict CSP, self-hosted font, no third-party requests, stored data validated on load, browser/device detection drives mode and notification advice
-- [ ] Landing page: playful copy that explains Daywell in 3 seconds, animated hero preview, how it works, features, "We never guess", final call to action; returning users go straight to the app
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Mobile-first: bottom tab bar (Today / Move / Hydrate / You), 44 px tap targets, 16 px inputs, safe areas; phones fall back to Manual mode with an explanation
+- [x] Brand kit: logo mark, favicon (SVG + ICO), app icons incl. maskable and Apple touch, web manifest, social preview image, custom icon set
+- [x] Settings replaced by "Your rhythm": sliders, segmented choices, steppers, switch, live plain-language summary, This device, Privacy & data
+- [x] Visual redesign: dark hero with glowing ring, at-a-glance tiles, animated water drop, steps ring, dark mode, reduced motion respected
+- [x] Security and browser awareness: strict CSP, self-hosted font, no third-party requests, stored data validated on load, browser/device detection drives mode and notification advice
+- [x] Landing page: playful copy that explains Daywell in 3 seconds, animated hero preview, how it works, features, "We never guess", final call to action; returning users go straight to the app
+- [x] Remove "Measuring" labels and move the audience line off the hero
+- [x] Accessibility (axe, WCAG 2.1 AA) and Lighthouse check: 0 axe issues after fixes; Lighthouse 98–100 across categories
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: brief evidence-based recap connecting "missing data is No data, never zero" (PRD) to `tests/reflection.test.js`, and the reminder bug to `canNudgeNow` and its test in `tests/engine.test.js`.
+Route and stops: reference route in the app map (idle.js `report` → engine.js `onActive`/`logBreak` → render.js "Welcome back."); not toured interactively.
+Edit outcome: offered (rewrite one `SUGGESTIONS` line); learner moved on to shipping, treated as declined.
+Reflection: offered; not answered.
+Activity mode: fast mode, recap.
 
 ## Revisions
 

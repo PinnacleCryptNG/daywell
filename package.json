@@ -1,13 +1,26 @@
 {
   "name": "daywell",
   "version": "0.1.0",
-  "description": "A calm desktop-browser companion for remote workers: measured desk and screen time, automatic breaks, water reminders, manual steps toward 10k and an optional calorie log.",
+  "description": "Breaks based on real desk time: measured desk and screen time, automatic breaks, water reminders, manual steps toward 10k and an optional calorie log.",
   "private": true,
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.js"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PinnacleCryptNG/daywell.git"
+  },
+  "keywords": [
+    "wellness",
+    "remote-work",
+    "breaks",
+    "idle-detection",
+    "pwa"
+  ]
 }
