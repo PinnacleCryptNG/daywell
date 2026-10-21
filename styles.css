@@ -206,8 +206,8 @@ button, input, select { font: inherit; color: inherit; }
 .float .ico-violet { background: #EFEAFF; color: #6D4AFF; }
 .f1 { top: 8%; left: -4%; animation: pop 7s ease-in-out infinite; }
 .f2 { top: 30%; right: -2%; animation: bob 5s ease-in-out infinite .6s; }
-.f3 { bottom: 10%; left: -2%; animation: bob 6.5s ease-in-out infinite 1.2s; }
-.f4 { bottom: 2%; right: 4%; animation: pop 7s ease-in-out infinite 3.5s; }
+.f3 { bottom: 20%; left: -6%; animation: bob 6.5s ease-in-out infinite 1.2s; }
+.f4 { bottom: 0; right: -2%; animation: pop 7s ease-in-out infinite 3.5s; }
 .f4 .ico { background: #FEF3C7; color: #B45309; }
 @keyframes pop { 0%, 8% { opacity: 0; transform: translateY(14px) scale(.85); } 14%, 46% { opacity: 1; transform: none; } 54%, 100% { opacity: 0; transform: translateY(-8px) scale(.95); } }
 
