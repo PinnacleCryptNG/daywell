@@ -47,7 +47,7 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="#today" aria-label="Daywell, today"><img src="assets/logo.svg" alt="" width="32" height="32"><span>Daywell</span></a>
+      <a class="brand" href="#home" aria-label="Daywell home"><img src="assets/logo.svg" alt="" width="32" height="32"><span>Daywell</span></a>
       <nav class="tabs" id="tabs" aria-label="Sections" hidden>
         <a href="#today" data-tab="today"><svg class="i"><use href="#i-today"/></svg><span>Today</span></a>
         <a href="#move" data-tab="move"><svg class="i"><use href="#i-move"/></svg><span>Move</span></a>
@@ -60,21 +60,97 @@
   <div class="demo-banner" id="demo-banner" hidden></div>
 
   <main id="main" class="page">
-    <section id="welcome" class="welcome" aria-labelledby="welcome-title" hidden>
-      <div class="welcome-hero">
-        <img class="welcome-logo" src="assets/logo.svg" alt="" width="72" height="72">
-        <p class="eyebrow eyebrow-light">For people who work at a desk</p>
-        <h1 id="welcome-title">Breaks based on <span class="grad">real desk time</span>, not a timer.</h1>
-        <p class="lede">Daywell notices how long you've actually been at your computer, suggests small breaks, and logs them when you step away. Honest numbers, no shame.</p>
-        <div class="device-card" id="welcome-device"></div>
-        <button class="btn btn-glow btn-lg" type="button" data-action="start">Start my day</button>
-        <p class="fineprint fineprint-light" id="welcome-note"></p>
+    <section id="welcome" class="landing" aria-labelledby="welcome-title" hidden>
+      <div class="lp-hero">
+        <div class="lp-aurora" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+        <div class="lp-copy">
+          <p class="lp-pill"><span class="pulse"></span>Wellness for people who work at a desk</p>
+          <h1 id="welcome-title">Your chair called.<br><span class="grad">It wants a break.</span></h1>
+          <p class="lp-lede">Daywell notices how long you've <em>really</em> been sitting, then nudges you to move, sip and stretch. No guilt, no nagging, no sign-up.</p>
+          <div class="lp-ctas">
+            <button class="btn btn-glow btn-lg cta-start shimmer" type="button" data-action="start">Start my day</button>
+            <a class="btn btn-ghost-light btn-lg" href="#how">See how it works</a>
+          </div>
+          <ul class="lp-trust">
+            <li><svg class="i"><use href="#i-check"/></svg>Free, no account</li>
+            <li><svg class="i"><use href="#i-check"/></svg>Runs in your browser</li>
+            <li><svg class="i"><use href="#i-check"/></svg>Nothing leaves your device</li>
+          </ul>
+        </div>
+        <div class="lp-visual" aria-hidden="true">
+          <div class="mock">
+            <div class="mock-top"><img src="assets/logo.svg" alt="" width="22" height="22"><span>Daywell</span><span class="mock-chip">Measuring</span></div>
+            <div class="mock-ring">
+              <svg viewBox="0 0 120 120"><defs><linearGradient id="mock-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5B7CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs><circle class="mt" cx="60" cy="60" r="52"/><circle class="mf" cx="60" cy="60" r="52"/></svg>
+              <div class="mock-center"><b id="mock-time">34:12</b><span>sitting</span></div>
+            </div>
+            <div class="mock-tiles">
+              <span><svg class="i"><use href="#i-break"/></svg><b>4</b>breaks</span>
+              <span><svg class="i"><use href="#i-drop"/></svg><b>1.2 L</b>water</span>
+              <span><svg class="i"><use href="#i-steps"/></svg><b>7,412</b>steps</span>
+            </div>
+          </div>
+          <div class="float f1"><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><div><b>Welcome back!</b><small>Break logged · 6 min away</small></div></div>
+          <div class="float f2"><span class="ico ico-blue"><svg class="i"><use href="#i-drop"/></svg></span><b>+250 ml</b></div>
+          <div class="float f3"><span class="ico ico-violet"><svg class="i"><use href="#i-move"/></svg></span><div><b>Stretch o'clock?</b><small>A 3-minute walk fits nicely</small></div></div>
+          <div class="float f4"><span class="ico"><svg class="i"><use href="#i-sparkle"/></svg></span><b>Water goal reached!</b></div>
+        </div>
       </div>
-      <ul class="features">
-        <li><span class="ico ico-blue"><svg class="i"><use href="#i-clock"/></svg></span><div><strong>Measured, not a timer</strong><p>A walk you just took actually counts.</p></div></li>
-        <li><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><div><strong>Breaks log themselves</strong><p>Step away, come back, and it's already there.</p></div></li>
-        <li><span class="ico ico-violet"><svg class="i"><use href="#i-shield"/></svg></span><div><strong>Private by design</strong><p>No account. Nothing leaves this device.</p></div></li>
-      </ul>
+
+      <div class="lp-marquee" aria-hidden="true"><div class="marquee-track">
+        <span>Small pauses add up</span><span>✦</span><span>Sip happens</span><span>✦</span><span>Your spine says thanks</span><span>✦</span><span>Stand up, sit better</span><span>✦</span><span>Move a little, feel a lot</span><span>✦</span>
+        <span>Small pauses add up</span><span>✦</span><span>Sip happens</span><span>✦</span><span>Your spine says thanks</span><span>✦</span><span>Stand up, sit better</span><span>✦</span><span>Move a little, feel a lot</span><span>✦</span>
+      </div></div>
+
+      <section class="lp-section" id="how" aria-labelledby="how-title">
+        <p class="eyebrow" data-reveal>Three steps, zero effort</p>
+        <h2 id="how-title" class="lp-h2" data-reveal>How it works</h2>
+        <ol class="lp-steps">
+          <li data-reveal><span class="step-n">1</span><span class="ico ico-blue"><svg class="i"><use href="#i-screen"/></svg></span><h3>Work like normal</h3><p>Open Daywell in a tab. It quietly counts real time at your desk, not a dumb timer.</p></li>
+          <li data-reveal><span class="step-n">2</span><span class="ico ico-violet"><svg class="i"><use href="#i-bell"/></svg></span><h3>Get a friendly nudge</h3><p>After about 50 minutes of actual sitting, you get one small, doable idea. Snooze it anytime.</p></li>
+          <li data-reveal><span class="step-n">3</span><span class="ico ico-cyan"><svg class="i"><use href="#i-move"/></svg></span><h3>Walk away. That's it.</h3><p>Step away and come back: the break is already logged with its real length. No buttons.</p></li>
+        </ol>
+      </section>
+
+      <section class="lp-section" aria-labelledby="feat-title">
+        <p class="eyebrow" data-reveal>All in one calm place</p>
+        <h2 id="feat-title" class="lp-h2" data-reveal>Everything your workday forgets</h2>
+        <div class="bento">
+          <article class="bento-card big" data-reveal><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><h3>Breaks that count themselves</h3><p>Lock your screen or wander off for a coffee and Daywell credits the break automatically.</p><div class="bento-art art-timeline"><i></i><i></i><i></i><i></i><i></i></div></article>
+          <article class="bento-card" data-reveal><span class="ico ico-blue"><svg class="i"><use href="#i-screen"/></svg></span><h3>Honest screen time</h3><p>Your real active time on this computer. No guessing.</p></article>
+          <article class="bento-card" data-reveal><span class="ico ico-cyan"><svg class="i"><use href="#i-drop"/></svg></span><h3>Water that reminds you</h3><p>One tap per glass, plus gentle reminders that never pile up.</p></article>
+          <article class="bento-card" data-reveal><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span><h3>Steps toward 10k</h3><p>Pop in the number from your phone and watch the ring fill.</p></article>
+          <article class="bento-card" data-reveal><span class="ico ico-amber"><svg class="i"><use href="#i-flame"/></svg></span><h3>Calories, if you like</h3><p>Off by default. No targets, no judgment, ever.</p></article>
+        </div>
+      </section>
+
+      <section class="lp-section lp-honest" aria-labelledby="honest-title">
+        <div data-reveal>
+          <p class="eyebrow">Our one rule</p>
+          <h2 id="honest-title" class="lp-h2">We never guess.</h2>
+          <p class="lp-sub">Every number says where it came from. If Daywell doesn't know, it says so, instead of showing a cheerful fake zero.</p>
+          <div class="honest-chips"><span class="chip chip-measured">Measured · this computer</span><span class="chip chip-manual">Manual · from your phone</span><span class="chip chip-reported">Reported</span><span class="chip">No data</span></div>
+        </div>
+        <div class="honest-card" data-reveal>
+          <div class="hc-row"><span>Steps today</span><s>0</s><b>No data</b></div>
+          <div class="hc-row"><span>Screen time</span><b>3 h 12 min</b><span class="chip chip-measured">Measured</span></div>
+          <div class="hc-row"><span>Water</span><b>1,250 ml</b><span class="chip chip-manual">Manual</span></div>
+        </div>
+      </section>
+
+      <section class="lp-final" data-reveal>
+        <h2>Ready when your chair is.</h2>
+        <p>Takes five seconds. Your data stays on this device.</p>
+        <div class="device-card" id="welcome-device"></div>
+        <button class="btn btn-glow btn-lg cta-start" type="button" data-action="start">Start my day</button>
+        <p class="fineprint fineprint-light" id="welcome-note"></p>
+      </section>
+
+      <footer class="lp-foot">
+        <span class="brand-mini"><img src="assets/logo.svg" alt="" width="20" height="20">Daywell</span>
+        <span>General wellbeing nudges, not medical advice.</span>
+        <span>Made for Build With AI: Basics · MIT licensed</span>
+      </footer>
     </section>
 
     <div id="app" hidden>

@@ -33,10 +33,11 @@ const chip = (source) => `<span class="chip chip-${source}">${SOURCE_LABEL[sourc
 
 export function render(ctx) {
   const { day } = ctx;
-  $('welcome').hidden = day.started;
-  $('app').hidden = !day.started;
-  renderChrome(ctx);
-  if (!day.started) {
+  const landing = !day.started || ctx.view === 'home';
+  $('welcome').hidden = !landing;
+  $('app').hidden = landing;
+  renderChrome(ctx, landing);
+  if (landing) {
     renderWelcome(ctx);
     return;
   }
@@ -61,7 +62,7 @@ function sourceChip(ctx) {
   return { cls: '', text: 'Not measuring' };
 }
 
-function renderChrome(ctx) {
+function renderChrome(ctx, landing) {
   const { day, view, settings } = ctx;
   document.documentElement.dataset.theme = settings.theme;
   const c = sourceChip(ctx);
@@ -71,7 +72,7 @@ function renderChrome(ctx) {
     el.className = `chip chip-dark ${c.cls}`;
     el.textContent = c.text;
   }
-  $('tabs').hidden = !day.started;
+  $('tabs').hidden = landing;
   for (const a of document.querySelectorAll('[data-tab]')) {
     if (a.dataset.tab === view) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
@@ -88,6 +89,7 @@ function renderChrome(ctx) {
 }
 
 function renderWelcome(ctx) {
+  for (const b of document.querySelectorAll('.cta-start')) b.textContent = ctx.day.started ? 'Open my day' : 'Start my day';
   const a = deviceAdvice(ctx.device);
   patch($('welcome-device'), `${icon(a.mode === 'measured' ? 'check' : 'device')}<div><strong>${esc(a.where)} · ${a.headline}</strong><p>${esc(a.detail)}</p></div>`);
   const notes = [];

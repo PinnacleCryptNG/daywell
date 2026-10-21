@@ -112,6 +112,7 @@ Build mode: fast — learner asked to minimise back-and-forth ("Do everything yo
 - [ ] Settings replaced by "Your rhythm": sliders, segmented choices, steppers, switch, live plain-language summary, This device, Privacy & data
 - [ ] Visual redesign: dark hero with glowing ring, at-a-glance tiles, animated water drop, steps ring, dark mode, reduced motion respected
 - [ ] Security and browser awareness: strict CSP, self-hosted font, no third-party requests, stored data validated on load, browser/device detection drives mode and notification advice
+- [ ] Landing page: playful copy that explains Daywell in 3 seconds, animated hero preview, how it works, features, "We never guess", final call to action; returning users go straight to the app
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map

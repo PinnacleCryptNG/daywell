@@ -31,6 +31,7 @@ function persist() {
 
 const currentView = () => {
   const hash = location.hash.slice(1);
+  if (hash === 'home' || hash === 'how') return 'home';
   return VIEWS.includes(hash) ? hash : 'today';
 };
 
@@ -162,8 +163,34 @@ function checkWaterReminder(t) {
 
 const clearWaterReminder = (t) => ({ ...day.waterReminder, visible: false, lastAt: t });
 
+const mockStart = Date.now() - (34 * 60 + 12) * 1000;
+function tickMock() {
+  const el = document.getElementById('mock-time');
+  if (document.getElementById('welcome').hidden || !el) return;
+  const s = Math.floor((Date.now() - mockStart) / 1000);
+  el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function setupReveal() {
+  const items = document.querySelectorAll('[data-reveal]');
+  if (!('IntersectionObserver' in window)) {
+    for (const el of items) el.classList.add('in');
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    }
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  for (const el of items) io.observe(el);
+}
+
 let ticks = 0;
 function tick() {
+  tickMock();
   const t = Date.now();
   rolloverIfNeeded(t);
   if (day.started) {
@@ -208,7 +235,7 @@ function go(view) {
 }
 
 const actions = {
-  start: () => startDay(),
+  start: () => (day.started ? go('today') : startDay()),
   'manual-away': () => dispatch({ type: 'away' }),
   'manual-active': () => dispatch({ type: 'active' }),
   'resume-measuring': async () => {
@@ -391,8 +418,9 @@ window.addEventListener('pagehide', flush);
 
 window.addEventListener('hashchange', () => {
   draw();
-  if (VIEWS.includes(location.hash.slice(1))) window.scrollTo({ top: 0 });
+  if (VIEWS.includes(location.hash.slice(1)) || location.hash === '#home') window.scrollTo({ top: 0, behavior: 'instant' });
 });
+setupReveal();
 
 if ('serviceWorker' in navigator && window.isSecureContext) {
   navigator.serviceWorker.register('sw.js').then((reg) => { swReg = reg; }).catch(() => {});
