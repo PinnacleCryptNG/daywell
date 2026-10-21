@@ -25,8 +25,13 @@ export function createDay(date, now) {
     prompt: { visible: false, shownCount: 0, shownAt: null, snoozeUntilMs: null, pausedForDay: false },
     notice: null,
     wrappedUp: false,
+    ignoreHours: false,
     lastSeen: now,
   };
+}
+
+export function canNudgeNow(t, settings, day) {
+  return (settings.speed ?? 1) > 1 || Boolean(day.ignoreHours) || inWorkHours(t, settings);
 }
 
 export function normalizeDay(day) {
@@ -110,7 +115,7 @@ function maybePrompt(d, t, settings, thresholdMs) {
   const p = d.prompt;
   if (!sitting || p.visible || p.pausedForDay) return;
   if (p.shownCount >= settings.dailyCap) return;
-  if (!inWorkHours(t, settings)) return;
+  if (!canNudgeNow(t, settings, d)) return;
   if (sitting >= (p.snoozeUntilMs ?? thresholdMs)) {
     p.visible = true;
     p.shownCount += 1;
@@ -192,6 +197,9 @@ export function reduce(day, event, settings) {
     }
     case 'dismissNotice':
       d.notice = null;
+      break;
+    case 'ignoreHours':
+      d.ignoreHours = event.value ?? true;
       break;
     case 'wrapUp':
       d.wrappedUp = event.value ?? true;

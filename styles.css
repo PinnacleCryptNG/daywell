@@ -186,3 +186,4 @@ button, input, select { font: inherit; color: inherit; }
 .settings-form label.check { display: flex; gap: 8px; align-items: center; }
 #water-reminder:not(:empty) { margin-bottom: 12px; }
 .reflection-stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.btn-sm { padding: 6px 12px; font-size: .88rem; }

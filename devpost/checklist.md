@@ -125,3 +125,4 @@ Activity mode:
 - Timeline spans from the first tracked moment to now (minimum one hour), not fixed work hours — a full 09:00–17:00 strip made short demo stretches invisible.
 - Undo on the welcome-back notice says "Undo, I was here" and restores the earlier sitting stretch — added because the 60 s idle window can mistake reading or watching for being away.
 - Added screen-time card, manual 10k steps, optional calorie log and water reminders (slices 7–9) — learner restated the full concept after the first checkpoint and chose honest web-app versions over cutting them.
+- Reminders outside work hours were silently held, so the learner saw none in the evening. Added "Remind me anyway today", demo speed now ignores work hours (stated in the banner), the water card shows when the next reminder is due, and desktop notification permission is requested on Start my day.

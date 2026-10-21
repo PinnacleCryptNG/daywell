@@ -1,6 +1,6 @@
-import { createDay, normalizeDay, openSegment, reduce, status } from './engine.js';
+import { canNudgeNow, createDay, normalizeDay, openSegment, reduce, status } from './engine.js';
 import { DEFAULT_SETTINGS, clearData, exportBlob, loadData, saveData } from './store.js';
-import { dateKey, inWorkHours } from './time.js';
+import { dateKey } from './time.js';
 import { addWater, editWater, removeWater, validAmount, waterReminderDue } from './water.js';
 import { addCalories, removeEntry, setSteps, validKcal, validSteps } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
@@ -30,6 +30,15 @@ function draw() {
   render({ day, settings, speed, now: Date.now(), sourceLive: sourceLive(), ui });
   const form = document.getElementById('settings-form');
   if (!document.getElementById('settings').hidden) {
+    const perm = 'Notification' in window ? Notification.permission : 'unsupported';
+    document.getElementById('notify-explain').textContent = {
+      granted: 'On. When this tab is in the background, break and water reminders also appear as desktop notifications.',
+      denied: 'Blocked. Reminders only show inside this tab. To change it, allow notifications in the site settings.',
+      default: 'Off. Reminders only show inside this tab. Turn on notifications to see them while you work in other windows.',
+      unsupported: 'This browser has no desktop notifications. Reminders show inside this tab.',
+    }[perm];
+    document.getElementById('notify-actions').innerHTML = perm === 'default'
+      ? '<button class="btn btn-soft" type="button" data-action="enable-notifications">Turn on notifications</button>' : '';
     document.getElementById('measure-explain').textContent = measureExplain(day.mode, sourceLive(), ui.sourceError);
     document.getElementById('measure-actions').innerHTML = day.mode === 'measured' && sourceLive()
       ? '<button class="btn btn-soft" type="button" data-action="use-manual">Switch to manual mode</button>'
@@ -79,8 +88,14 @@ async function beginMeasured(src) {
   }
 }
 
+function askNotifications() {
+  if (!('Notification' in window) || Notification.permission !== 'default') return Promise.resolve();
+  return Notification.requestPermission().catch(() => {}).finally(draw);
+}
+
 async function startDay() {
   const src = await connectMeasured(true);
+  await askNotifications();
   if (src) {
     dispatch({ type: 'start', mode: 'measured' });
     await beginMeasured(src);
@@ -130,7 +145,7 @@ function notifyIfNeeded() {
 }
 
 function checkWaterReminder(t) {
-  if (waterReminderDue(day, settings, t, { inWorkHours, speed })) {
+  if (waterReminderDue(day, settings, t, { inWorkHours: (now) => canNudgeNow(now, engineSettings(), day), speed })) {
     day = { ...day, waterReminder: { visible: true, shownCount: day.waterReminder.shownCount + 1, lastAt: t } };
     persist();
   }
@@ -219,6 +234,9 @@ const actions = {
   resume: () => dispatch({ type: 'resume' }),
   'undo-break': (el) => dispatch({ type: 'undoBreak', id: el.dataset.id }),
   'dismiss-notice': () => dispatch({ type: 'dismissNotice' }),
+  'ignore-hours': () => dispatch({ type: 'ignoreHours', value: true }),
+  'respect-hours': () => dispatch({ type: 'ignoreHours', value: false }),
+  'enable-notifications': () => askNotifications(),
   'wrap-up': () => { dispatch({ type: 'wrapUp', value: true }); window.scrollTo({ top: 0, behavior: 'smooth' }); },
   unwrap: () => dispatch({ type: 'wrapUp', value: false }),
   'water-add': (el) => logWater(Number(el.dataset.ml)),

@@ -26,13 +26,19 @@ export function waterTotal(entries) {
   return entries.reduce((sum, e) => sum + e.ml, 0);
 }
 
-export function waterReminderDue(day, settings, now, { inWorkHours, speed = 1 }) {
-  const every = settings.waterReminderMin;
+export function waterReminderNextAt(day, settings, now, speed = 1) {
+  if (!settings.waterReminderMin || !day.started) return null;
   const r = day.waterReminder;
-  if (!every || !day.started || r.visible || day.prompt.visible) return false;
-  if (r.shownCount >= settings.waterReminderCap || !inWorkHours(now, settings)) return false;
   const since = Math.max(day.water.at(-1)?.at ?? 0, r.lastAt ?? 0, day.segments[0]?.start ?? now);
-  return now - since >= (every * 60_000) / speed;
+  return since + (settings.waterReminderMin * 60_000) / speed;
+}
+
+export function waterReminderDue(day, settings, now, { inWorkHours, speed = 1 }) {
+  const r = day.waterReminder;
+  const next = waterReminderNextAt(day, settings, now, speed);
+  if (next == null || r.visible || day.prompt.visible) return false;
+  if (r.shownCount >= settings.waterReminderCap || !inWorkHours(now, settings)) return false;
+  return now >= next;
 }
 
 export function lastWaterAt(day) {

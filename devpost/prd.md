@@ -113,7 +113,7 @@ Carried from the learner's PRD (`scope.md > Inspiration & Identity`):
 - Water presets 150/250/350/500 ml, undo/edit, non-medical target copy — from learner's PRD §7.4.
 - Visual direction — from learner's PRD §10.
 - *Assumption (agent):* default minimum break 2 min, daily cap 8, default water target 2,000 ml, default work hours 09:00–17:00 Mon–Fri. All editable.
-- *Assumption (agent):* a labelled **demo speed** setting (time thresholds compressed) exists so the video can show a full cycle quickly; it never fabricates idle events.
+- *Assumption (agent):* a labelled **demo speed** setting (time thresholds compressed) exists so the video can show a full cycle quickly; it never fabricates idle events. Demo speed also ignores work hours (stated in the banner), and outside work hours the person can choose "Remind me anyway today".
 
 ## What We're Building
 Welcome + permission flow; screen-time card; manual steps toward 10k; optional calorie log; capped water reminders; measured/manual desk-time clock with source chips; automatic break credit; one-at-a-time break prompt with Done/Snooze/Pause, work hours and cap; today's timeline; water logging with undo/edit; daily reflection; settings with export/delete; persistence across reloads; labelled demo speed.

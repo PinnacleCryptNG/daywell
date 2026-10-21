@@ -1,6 +1,6 @@
-import { effective, isBreakSegment, openSegment, sittingMs, status } from '../engine.js';
+import { canNudgeNow, effective, isBreakSegment, openSegment, sittingMs, status } from '../engine.js';
 import { formatClock, formatDuration, formatTimer, inWorkHours, MINUTE } from '../time.js';
-import { lastWaterAt, waterTotal } from '../water.js';
+import { lastWaterAt, waterReminderNextAt, waterTotal } from '../water.js';
 import { caloriesTotal, latestSteps } from '../habits.js';
 import { summarize } from '../reflection.js';
 
@@ -63,7 +63,7 @@ function renderChrome(ctx) {
   const demo = $('demo-banner');
   demo.hidden = ctx.speed === 1;
   if (ctx.speed !== 1) {
-    patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Idle detection and durations are real. <a href="./">Exit demo speed</a>`);
+    patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Work hours are ignored. Idle detection and durations are real. <a href="./">Exit demo speed</a>`);
   }
   const promptUp = ctx.day.prompt.visible;
   const waterUp = ctx.day.waterReminder?.visible;
@@ -114,9 +114,9 @@ function renderHero(ctx) {
   } else if (p.pausedForDay) {
     line = 'Break suggestions are paused for today.';
     lineAction = '<button class="btn-link" type="button" data-action="resume">Resume nudges</button>';
-  } else if (!inWorkHours(now, settings)) {
-    line = `Outside your work hours (${settings.workStart}–${settings.workEnd}), so no nudges. Desk time is still measured.`;
-    lineAction = '<button class="btn-link" type="button" data-action="open-settings">Change hours</button>';
+  } else if (!canNudgeNow(now, { ...settings, speed }, day)) {
+    line = `Outside your work hours (${settings.workStart}–${settings.workEnd}), so break and water reminders are on hold. Desk time is still measured.`;
+    lineAction = '<button class="btn btn-soft btn-sm" type="button" data-action="ignore-hours">Remind me anyway today</button> <button class="btn-link" type="button" data-action="open-settings">Change hours</button>';
   } else if (p.shownCount >= settings.dailyCap && !p.visible) {
     line = `You've had all ${settings.dailyCap} nudges for today. Daywell will stay quiet.`;
   } else if (p.visible) {
@@ -125,6 +125,7 @@ function renderHero(ctx) {
     line = `Snoozed. Next suggestion in ${formatDuration(Math.max(0, p.snoozeUntilMs - sit))}.`;
   } else {
     line = `Next break suggestion in ${formatDuration(Math.max(0, thresholdMs - sit))} of sitting.`;
+    if (day.ignoreHours && speed === 1 && !inWorkHours(now, settings)) lineAction = '<button class="btn-link" type="button" data-action="respect-hours">Hold reminders outside work hours</button>';
   }
   patch($('hero-status'), `${line} ${lineAction}`);
 
@@ -281,7 +282,19 @@ function renderSteps(ctx) {
 function renderWaterReminder(ctx) {
   const { day, now } = ctx;
   const r = day.waterReminder;
-  if (!r?.visible) { patch($('water-reminder'), ''); return; }
+  if (!r?.visible) {
+    const { settings, speed } = ctx;
+    let text;
+    if (!settings.waterReminderMin) text = 'Water reminders are off. <button class="btn-link" type="button" data-action="open-settings">Turn on</button>';
+    else if (r.shownCount >= settings.waterReminderCap) text = `You've had all ${settings.waterReminderCap} water reminders for today.`;
+    else if (!canNudgeNow(now, { ...settings, speed }, day)) text = 'Water reminders are on hold outside work hours.';
+    else {
+      const next = waterReminderNextAt(day, settings, now, speed);
+      text = `Next water reminder in ${formatDuration(Math.max(0, next - now))}${day.prompt.visible ? ', after your break' : ''}.`;
+    }
+    patch($('water-reminder'), `<p class="fineprint">${text}</p>`);
+    return;
+  }
   const last = lastWaterAt(day);
   patch($('water-reminder'), `<div class="notice-inner"><span><strong>Time for some water?</strong> ${last ? `Your last glass was at ${formatClock(last)}.` : 'Nothing logged yet today.'}</span><span class="spacer"></span>
     <button class="btn btn-primary" type="button" data-action="water-remind-log">+250 ml</button>

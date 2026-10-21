@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createDay, reduce, sittingMs, status } from '../src/engine.js';
+import { canNudgeNow, createDay, reduce, sittingMs, status } from '../src/engine.js';
 import { DEFAULT_SETTINGS } from '../src/store.js';
 import { MINUTE } from '../src/time.js';
 
@@ -141,4 +141,14 @@ test('closing a gap ends the open segment at last seen, leaving the gap untracke
   day = reduce(day, { type: 'active', t: at(80) }, settings);
   assert.equal(day.segments[1].start, at(80));
   assert.equal(day.breaks.length, 0);
+});
+
+test('nudges outside work hours only when overridden for today or in demo speed', () => {
+  const settings = { workStart: '09:00', workEnd: '17:00', workDays: [1, 2, 3, 4, 5], speed: 1 };
+  const night = new Date(2026, 9, 20, 22, 0).getTime();
+  const day = createDay('2026-10-20', night);
+  assert.equal(canNudgeNow(night, settings, day), false);
+  assert.equal(canNudgeNow(night, { ...settings, speed: 60 }, day), true);
+  const overridden = reduce(day, { type: 'ignoreHours', value: true, t: night }, settings);
+  assert.equal(canNudgeNow(night, settings, overridden), true);
 });
