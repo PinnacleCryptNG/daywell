@@ -61,6 +61,12 @@ PRD ref: `prd.md > States and Boundaries`, `prd.md > Settings and data`.
 ### Water (`src/water.js`)
 Pure `add`, `remove`, `edit`, `total`. PRD ref: `prd.md > Water logging`.
 
+### Habits (`src/habits.js`)
+Pure ops for manual steps (`setSteps`, `latestSteps`) and the optional calorie log (`addCalories`, `removeCalories`, `caloriesTotal`). PRD ref: `prd.md > Steps (manual)`, `prd.md > Calories (optional)`.
+
+### Water reminders (`src/water.js > waterReminderDue`)
+Pure check of interval since the last glass/reminder, work hours, cap, and that no break prompt is showing. PRD ref: `prd.md > Water reminders`.
+
 ### Reflection (`src/reflection.js`)
 Pure summary of a day record → counts and copy strings; "No data" for empty metrics. PRD ref: `prd.md > Daily reflection`.
 
@@ -71,13 +77,17 @@ PRD ref: `prd.md > Screens and Layout`, `prd.md > Today's timeline`.
 ## Data Model
 ```js
 settings = { thresholdMin: 50, minBreakMin: 2, workStart: "09:00", workEnd: "17:00",
-             workDays: [1,2,3,4,5], dailyCap: 8, waterTargetMl: 2000, speed: 1 }
+             workDays: [1,2,3,4,5], dailyCap: 8, waterTargetMl: 2000,
+             stepGoal: 10000, caloriesEnabled: false, waterReminderMin: 90, waterReminderCap: 4, speed: 1 }
 day = {
   date: "2026-10-20",
   mode: "measured" | "manual" | null,
   segments: [{ kind: "desk"|"away"|"untracked", start, end|null, source }],
   breaks:   [{ id, start, end, durationMs, source: "measured"|"manual"|"reported" }],
   water:    [{ id, at, ml }],
+  steps:    [{ id, at, total }],          // manual, latest wins
+  calories: [{ id, at, kcal, note }],     // only used when enabled
+  waterReminder: { visible, shownCount, lastAt },
   prompt:   { visible, shownCount, snoozeUntilSittingMs|null, pausedForDay },
   notice:   { text, at } | null,
   wrappedUp: false,
@@ -95,7 +105,8 @@ daywell/
 ├── src/
 │   ├── app.js            # wiring: store ⇄ engine ⇄ sources ⇄ ui, 1 s tick
 │   ├── engine.js         # pure desk-time logic
-│   ├── water.js          # pure water log ops
+│   ├── water.js          # pure water log ops + reminder rule
+│   ├── habits.js         # pure steps + calorie ops
 │   ├── reflection.js     # pure day summary
 │   ├── store.js          # localStorage persistence
 │   ├── time.js           # day keys, work-hours, formatting

@@ -1,7 +1,8 @@
-import { createDay, openSegment, reduce, status } from './engine.js';
+import { createDay, normalizeDay, openSegment, reduce, status } from './engine.js';
 import { DEFAULT_SETTINGS, clearData, exportBlob, loadData, saveData } from './store.js';
-import { dateKey } from './time.js';
-import { addWater, editWater, removeWater, validAmount } from './water.js';
+import { dateKey, inWorkHours } from './time.js';
+import { addWater, editWater, removeWater, validAmount, waterReminderDue } from './water.js';
+import { addCalories, removeEntry, setSteps, validKcal, validSteps } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
 import { createManualSource } from './sources/manual.js';
 import { render } from './ui/render.js';
@@ -12,9 +13,9 @@ const speed = Math.min(600, Math.max(1, Number.parseInt(params.get('speed'), 10)
 
 let data = loadData();
 let settings = data.settings;
-let day = data.days[dateKey(Date.now())] ?? createDay(dateKey(Date.now()), Date.now());
+let day = normalizeDay(data.days[dateKey(Date.now())] ?? createDay(dateKey(Date.now()), Date.now()));
 let source = null;
-const ui = { editingWaterId: null, sourceError: null, toastTimer: null, lastPromptAt: null };
+const ui = { editingWaterId: null, sourceError: null, toastTimer: null, lastPromptAt: null, lastWaterReminderAt: null };
 
 const engineSettings = () => ({ ...settings, speed });
 const sourceLive = () => Boolean(source && source.kind === 'measured');
@@ -128,6 +129,21 @@ function notifyIfNeeded() {
   }
 }
 
+function checkWaterReminder(t) {
+  if (waterReminderDue(day, settings, t, { inWorkHours, speed })) {
+    day = { ...day, waterReminder: { visible: true, shownCount: day.waterReminder.shownCount + 1, lastAt: t } };
+    persist();
+  }
+  const r = day.waterReminder;
+  if (!r.visible || r.lastAt === ui.lastWaterReminderAt) return;
+  ui.lastWaterReminderAt = r.lastAt;
+  if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+    new Notification('Time for some water?', { body: 'Daywell: a glass of water would fit nicely now.', tag: 'daywell-water', icon: 'assets/icon.svg' });
+  }
+}
+
+const clearWaterReminder = (t) => ({ ...day.waterReminder, visible: false, lastAt: t });
+
 let ticks = 0;
 function tick() {
   const t = Date.now();
@@ -135,6 +151,7 @@ function tick() {
   if (day.started) {
     day = reduce(day, { type: 'tick', t }, engineSettings());
     if (++ticks % 5 === 0) persist();
+    checkWaterReminder(t);
   }
   notifyIfNeeded();
   draw();
@@ -151,7 +168,7 @@ function showToast(text, undo) {
 
 function logWater(ml) {
   const { entries, entry } = addWater(day.water, ml, Date.now());
-  day = { ...day, water: entries };
+  day = { ...day, water: entries, waterReminder: clearWaterReminder(entry.at) };
   persist();
   draw();
   showToast(`Logged ${entry.ml} ml of water.`, () => {
@@ -226,6 +243,28 @@ const actions = {
       draw();
     });
   },
+  'water-remind-log': () => logWater(250),
+  'water-remind-dismiss': () => {
+    day = { ...day, waterReminder: clearWaterReminder(Date.now()) };
+    persist();
+    draw();
+  },
+  'steps-undo': (el) => {
+    day = { ...day, steps: removeEntry(day.steps, el.dataset.id) };
+    persist();
+    draw();
+  },
+  'cal-delete': (el) => {
+    const removed = day.calories.find((c) => c.id === el.dataset.id);
+    day = { ...day, calories: removeEntry(day.calories, el.dataset.id) };
+    persist();
+    draw();
+    showToast(`Removed ${removed.kcal} kcal.`, () => {
+      day = { ...day, calories: [...day.calories, removed].sort((a, b) => a.at - b.at) };
+      persist();
+      draw();
+    });
+  },
   'toast-undo': () => {
     const el = document.getElementById('toast');
     el.__undo?.();
@@ -278,6 +317,37 @@ document.getElementById('water-custom').addEventListener('submit', (e) => {
   err.textContent = '';
   input.value = '';
   logWater(ml);
+});
+
+document.getElementById('steps-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = e.target.total;
+  const total = Number(input.value);
+  const err = document.getElementById('steps-error');
+  if (input.value === '' || !validSteps(total)) {
+    err.textContent = 'Enter a whole number between 0 and 100,000.';
+    return;
+  }
+  err.textContent = '';
+  input.value = '';
+  day = { ...day, steps: setSteps(day.steps, total, Date.now()).entries };
+  persist();
+  draw();
+});
+
+document.getElementById('cal-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const kcal = Number(e.target.kcal.value);
+  const err = document.getElementById('cal-error');
+  if (!validKcal(kcal)) {
+    err.textContent = 'Enter an amount between 1 and 5,000 kcal.';
+    return;
+  }
+  err.textContent = '';
+  day = { ...day, calories: addCalories(day.calories, kcal, e.target.note.value, Date.now()).entries };
+  e.target.reset();
+  persist();
+  draw();
 });
 
 document.getElementById('settings-form').addEventListener('change', (e) => {

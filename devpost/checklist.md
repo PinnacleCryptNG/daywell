@@ -69,6 +69,36 @@ Build mode: fast — learner asked to minimise back-and-forth ("Do everything yo
   Learner check: Wrap up your day and read the reflection — does the tone feel right?
   Commit: `Add daily reflection, settings and data controls`
 
+- [x] **7. You can see today's active screen time and track steps toward 10k**
+  Becomes usable: Screen-time card (measured) and a manual steps card with a 10k goal.
+  Why now: Learner restated the full concept; both reuse existing data/patterns honestly.
+  PRD ref: `prd.md > Screen time on this computer`, `prd.md > Steps (manual)`
+  Spec ref: `spec.md > Habits`, `spec.md > Data Model`
+  Build: habits.js with tests, two cards, step goal setting, reflection stats.
+  Verify (mechanical): tests for steps; UI shows "No data" then entered value with Manual label.
+  Learner check: Enter your phone's step count and check the screen-time number makes sense.
+  Commit: `Add screen-time card and manual 10k steps`
+
+- [x] **8. You can turn on an optional calorie log**
+  Becomes usable: Settings toggle reveals a target-free calorie log.
+  Why now: Lowest priority of the restated concept; kept off by default.
+  PRD ref: `prd.md > Calories (optional)`
+  Spec ref: `spec.md > Habits`
+  Build: calorie ops with tests, card, settings toggle.
+  Verify (mechanical): tests; card hidden by default, appears when enabled.
+  Learner check: Turn it on, log an entry, and say whether the tone feels right.
+  Commit: `Add optional calorie log`
+
+- [x] **9. Daywell gently reminds you to drink water**
+  Becomes usable: Capped water reminders that never collide with a break prompt.
+  Why now: Completes the hydration part of the concept on top of water logging.
+  PRD ref: `prd.md > Water reminders`
+  Spec ref: `spec.md > Water reminders`
+  Build: waterReminderDue with tests, reminder banner, settings.
+  Verify (mechanical): tests for interval/cap/work hours/prompt collision; demo speed shows reminder.
+  Learner check: In demo speed, wait for the water reminder and log a glass from it.
+  Commit: `Add capped water reminders`
+
 ## Hands-on Checkpoints
 
 - [ ] Early usable behavior explored — after slice 2 (kernel working)
@@ -94,3 +124,4 @@ Activity mode:
 
 - Timeline spans from the first tracked moment to now (minimum one hour), not fixed work hours — a full 09:00–17:00 strip made short demo stretches invisible.
 - Undo on the welcome-back notice says "Undo, I was here" and restores the earlier sitting stretch — added because the 60 s idle window can mistake reading or watching for being away.
+- Added screen-time card, manual 10k steps, optional calorie log and water reminders (slices 7–9) — learner restated the full concept after the first checkpoint and chose honest web-app versions over cutting them.

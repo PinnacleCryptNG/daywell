@@ -31,17 +31,20 @@ Open the app in Chrome, allow idle detection, and see the Today screen with a li
 - Break prompt with Done / Snooze / Pause-for-today, configurable sitting threshold, work hours respected.
 - Quick water logging with presets, undo/edit, daily target.
 - Today screen with source labels and a simple end-of-day reflection.
+- Active screen time on this computer, shown as its own measured card (desk time relabelled — no phone or per-app data).
+- A 10k steps goal updated manually from the person's phone, labelled *Manual · from your phone*.
+- Optional calorie log, off by default, awareness only (no targets, no judgment).
+- Gentle water reminders on their own schedule, capped per day, never shown alongside a break prompt.
 
 ## Later
-- Hydration reminders with their own schedule and cap.
 - 7-day / 30-day insights.
 - Calendar-aware reminder suppression.
 - Installable PWA, notification when the tab is in the background.
 - Mobile companion.
 
 ## Explicitly Cut
-- **Step tracking** — a web app can't count steps reliably; would need native HealthKit/Health Connect work that doesn't prove the kernel.
-- **Per-app / device-wide screen time** — no honest browser API; the PRD forbids estimating it.
-- **Calories** — optional in the PRD, carries harm risk, and doesn't serve the kernel.
+- **Automatic step counting** — a web app can't count steps; would need native HealthKit/Health Connect. Steps are entered manually instead.
+- **Per-app / phone screen time** — no honest browser API; only this computer's active time is shown.
+- **Calorie targets and automatic estimates** — harm risk; the calorie log is manual, optional and target-free.
 - **Accounts, sync, backend** — local-first is enough for a single-user proof of concept.
 - **Native mobile app** — out of reach in the hackathon window and the desk is where the sitting happens.

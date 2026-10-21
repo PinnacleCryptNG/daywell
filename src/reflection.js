@@ -1,4 +1,5 @@
 import { waterTotal } from './water.js';
+import { latestSteps } from './habits.js';
 
 export function summarize(day, settings, now) {
   const desk = day.segments.filter((s) => s.kind === 'desk').map((s) => (s.end ?? now) - s.start);
@@ -8,6 +9,7 @@ export function summarize(day, settings, now) {
   for (const b of day.breaks) bySource[b.source] = (bySource[b.source] || 0) + 1;
   const breaks = day.breaks.length;
   const waterMl = day.water.length ? waterTotal(day.water) : null;
+  const steps = latestSteps(day.steps ?? [])?.total ?? null;
 
   let headline;
   if (breaks > 0) headline = `You took ${breaks} movement break${breaks === 1 ? '' : 's'} today. Small pauses add up.`;
@@ -19,5 +21,5 @@ export function summarize(day, settings, now) {
   else if (waterMl >= settings.waterTargetMl) waterLine = `You logged ${waterMl.toLocaleString()} ml of water, reaching your ${settings.waterTargetMl.toLocaleString()} ml target.`;
   else waterLine = `You logged ${waterMl.toLocaleString()} ml of water.`;
 
-  return { breaks, bySource, deskMs, longestMs, waterMl, headline, waterLine };
+  return { breaks, bySource, deskMs, longestMs, waterMl, steps, headline, waterLine };
 }

@@ -8,6 +8,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   workDays: [1, 2, 3, 4, 5],
   dailyCap: 8,
   waterTargetMl: 2000,
+  stepGoal: 10000,
+  caloriesEnabled: false,
+  waterReminderMin: 90,
+  waterReminderCap: 4,
 });
 
 export function loadData(storage = globalThis.localStorage) {

@@ -1,6 +1,7 @@
 import { effective, isBreakSegment, openSegment, sittingMs, status } from '../engine.js';
 import { formatClock, formatDuration, formatTimer, inWorkHours, MINUTE } from '../time.js';
-import { waterTotal } from '../water.js';
+import { lastWaterAt, waterTotal } from '../water.js';
+import { caloriesTotal, latestSteps } from '../habits.js';
 import { summarize } from '../reflection.js';
 
 const $ = (id) => document.getElementById(id);
@@ -22,6 +23,8 @@ function patch(el, html) {
   }
 }
 
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
 const chip = (source) => `<span class="chip chip-${source}">${SOURCE_LABEL[source]}</span>`;
 
 export function render(ctx) {
@@ -32,8 +35,12 @@ export function render(ctx) {
   if (!day.started) return;
   renderHero(ctx);
   renderTimeline(ctx);
+  renderScreen(ctx);
+  renderSteps(ctx);
   renderBreaks(ctx);
+  renderWaterReminder(ctx);
   renderWater(ctx);
+  renderCalories(ctx);
   renderReflection(ctx);
 }
 
@@ -59,7 +66,8 @@ function renderChrome(ctx) {
     patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Idle detection and durations are real. <a href="./">Exit demo speed</a>`);
   }
   const promptUp = ctx.day.prompt.visible;
-  document.title = promptUp ? '• Time for a short break · Daywell' : 'Daywell';
+  const waterUp = ctx.day.waterReminder?.visible;
+  document.title = promptUp ? '• Time for a short break · Daywell' : waterUp ? '• Time for some water · Daywell' : 'Daywell';
 }
 
 function renderHero(ctx) {
@@ -235,6 +243,65 @@ function renderWater(ctx) {
   patch($('water-list'), day.water.length ? `<ul class="list">${rows}</ul>` : '<p class="empty">No water logged yet. One tap above adds a glass.</p>');
 }
 
+function deskStats(day, now) {
+  const desk = day.segments.filter((s) => s.kind === 'desk').map((s) => (s.end ?? now) - s.start);
+  if (!desk.length) return null;
+  return { total: desk.reduce((a, b) => a + b, 0), longest: Math.max(...desk), stretches: desk.length };
+}
+
+function renderScreen(ctx) {
+  const { day, now } = ctx;
+  const manual = day.mode === 'manual';
+  $('screen-chip').className = `chip ${manual ? 'chip-manual' : 'chip-measured'}`;
+  $('screen-chip').textContent = manual ? 'Manual' : 'Measured · this computer';
+  const s = deskStats(day, now);
+  patch($('screen'), s
+    ? `<div class="big-number">${formatDuration(s.total)}</div>
+      <div class="big-sub">active on this computer today · longest stretch ${formatDuration(s.longest)}</div>
+      <p class="empty">${manual ? 'Based on when you told Daywell you were at your desk.' : 'Counted from keyboard, mouse and screen-lock signals while Daywell is open.'} Your phone, other devices and which apps you used aren't included.</p>`
+    : '<div class="big-number">No data</div><div class="big-sub">Nothing tracked yet today.</div>');
+}
+
+function renderSteps(ctx) {
+  const { day, settings } = ctx;
+  const goal = settings.stepGoal;
+  const last = latestSteps(day.steps);
+  if (!last) {
+    patch($('steps-summary'), `<div class="big-number">No data</div><div class="big-sub">Goal ${goal.toLocaleString()} steps. Type today's count from your phone below.</div>`);
+    return;
+  }
+  const pct = Math.min(100, (last.total / goal) * 100);
+  patch($('steps-summary'), `
+    <div class="big-number">${last.total.toLocaleString()} <span class="big-sub">of ${goal.toLocaleString()} steps</span></div>
+    <div class="progress" role="progressbar" aria-label="Steps today" aria-valuemin="0" aria-valuemax="${goal}" aria-valuenow="${last.total}"><span style="width:${pct}%"></span></div>
+    <div class="big-sub">${last.total >= goal ? 'Goal reached. Nicely done.' : `${(goal - last.total).toLocaleString()} to go`} · updated ${formatClock(last.at)}
+      <button class="btn-link" type="button" data-action="steps-undo" data-id="${last.id}">Undo update</button></div>`);
+}
+
+function renderWaterReminder(ctx) {
+  const { day, now } = ctx;
+  const r = day.waterReminder;
+  if (!r?.visible) { patch($('water-reminder'), ''); return; }
+  const last = lastWaterAt(day);
+  patch($('water-reminder'), `<div class="notice-inner"><span><strong>Time for some water?</strong> ${last ? `Your last glass was at ${formatClock(last)}.` : 'Nothing logged yet today.'}</span><span class="spacer"></span>
+    <button class="btn btn-primary" type="button" data-action="water-remind-log">+250 ml</button>
+    <button class="btn-link" type="button" data-action="water-remind-dismiss">Not now</button></div>`);
+}
+
+function renderCalories(ctx) {
+  const { day, settings } = ctx;
+  $('cal-card').hidden = !settings.caloriesEnabled;
+  if (!settings.caloriesEnabled) return;
+  const total = caloriesTotal(day.calories);
+  patch($('cal-summary'), `
+    <div class="big-number">${total == null ? 'No data' : `${total.toLocaleString()} <span class="big-sub">kcal logged</span>`}</div>
+    <div class="big-sub">For awareness only. No targets, no judgment.</div>`);
+  const rows = [...day.calories].reverse().map((c) => `
+    <li><span class="time">${formatClock(c.at)}</span><span class="grow">${c.kcal.toLocaleString()} kcal${c.note ? ` · ${esc(c.note)}` : ''}</span>
+      <button class="btn-link" type="button" data-action="cal-delete" data-id="${c.id}" aria-label="Delete ${c.kcal} kcal at ${formatClock(c.at)}">Delete</button></li>`).join('');
+  patch($('cal-list'), day.calories.length ? `<ul class="list">${rows}</ul>` : '<p class="empty">Nothing logged. Entries you add appear here.</p>');
+}
+
 function renderReflection(ctx) {
   const { day, settings, now } = ctx;
   const el = $('reflection');
@@ -248,7 +315,8 @@ function renderReflection(ctx) {
     <div class="reflection-stats">
       <div class="stat"><b>${s.breaks}</b><span>breaks${s.bySource.measured ? ` · ${s.bySource.measured} measured` : ''}</span></div>
       <div class="stat"><b>${formatDuration(s.longestMs)}</b><span>longest sitting stretch</span></div>
-      <div class="stat"><b>${formatDuration(s.deskMs)}</b><span>${day.mode === 'manual' ? 'desk time (manual)' : 'measured desk time'}</span></div>
+      <div class="stat"><b>${formatDuration(s.deskMs)}</b><span>${day.mode === 'manual' ? 'screen time (manual)' : 'screen time · measured'}</span></div>
+      <div class="stat"><b>${s.steps == null ? 'No data' : s.steps.toLocaleString()}</b><span>steps · from your phone</span></div>
       <div class="stat"><b>${s.waterMl == null ? 'No data' : `${s.waterMl.toLocaleString()} ml`}</b><span>water logged</span></div>
     </div>
     <p>${s.waterLine} Time when Daywell wasn't open isn't counted either way.</p>

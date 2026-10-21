@@ -181,3 +181,8 @@ button, input, select { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.water-custom input.wide { width: 180px; }
+.settings-form label.check { display: flex; gap: 8px; align-items: center; }
+#water-reminder:not(:empty) { margin-bottom: 12px; }
+.reflection-stats { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }

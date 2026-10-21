@@ -80,6 +80,24 @@
       </section>
 
       <div class="grid">
+        <section class="card" aria-labelledby="screen-title" id="screen-card">
+          <div class="card-head"><h2 id="screen-title">Screen time</h2><span class="chip" id="screen-chip"></span></div>
+          <div id="screen"></div>
+        </section>
+
+        <section class="card" aria-labelledby="steps-title" id="steps-card">
+          <div class="card-head"><h2 id="steps-title">Steps</h2><span class="chip chip-manual">Manual · from your phone</span></div>
+          <div id="steps-summary"></div>
+          <form class="water-custom" id="steps-form">
+            <label for="steps-input">Steps so far today (check your phone)</label>
+            <div class="inline">
+              <input id="steps-input" name="total" type="number" inputmode="numeric" min="0" max="100000" step="1" placeholder="e.g. 4200">
+              <button class="btn btn-primary" type="submit">Update</button>
+            </div>
+            <p class="field-error" id="steps-error" role="alert"></p>
+          </form>
+        </section>
+
         <section class="card" aria-labelledby="breaks-title" id="breaks-card">
           <div class="card-head"><h2 id="breaks-title">Breaks</h2><span class="chip" id="breaks-chip"></span></div>
           <div id="breaks"></div>
@@ -87,6 +105,7 @@
 
         <section class="card" aria-labelledby="water-title" id="water-card">
           <div class="card-head"><h2 id="water-title">Water</h2><span class="chip">Manual</span></div>
+          <div id="water-reminder" aria-live="polite"></div>
           <div id="water-summary"></div>
           <div class="water-presets" role="group" aria-label="Log water">
             <button class="btn btn-soft" type="button" data-action="water-add" data-ml="150">+150 ml</button>
@@ -103,6 +122,22 @@
             <p class="field-error" id="water-error" role="alert"></p>
           </form>
           <div id="water-list"></div>
+        </section>
+
+        <section class="card" aria-labelledby="cal-title" id="cal-card" hidden>
+          <div class="card-head"><h2 id="cal-title">Calories</h2><span class="chip chip-manual">Manual · optional</span></div>
+          <div id="cal-summary"></div>
+          <form class="water-custom" id="cal-form">
+            <label for="cal-kcal">Add an entry</label>
+            <div class="inline">
+              <input id="cal-kcal" name="kcal" type="number" inputmode="numeric" min="1" max="5000" step="1" placeholder="kcal">
+              <label class="sr-only" for="cal-note">Note</label>
+              <input id="cal-note" name="note" type="text" maxlength="60" placeholder="What (optional)" class="wide">
+              <button class="btn btn-soft" type="submit">Add</button>
+            </div>
+            <p class="field-error" id="cal-error" role="alert"></p>
+          </form>
+          <div id="cal-list"></div>
         </section>
       </div>
 
@@ -136,7 +171,20 @@
         <fieldset>
           <legend>Water</legend>
           <label>Daily target <input name="waterTargetMl" type="number" min="250" max="6000" step="50"> ml</label>
-          <p class="fineprint">A general estimate, not medical advice.</p>
+          <label>Remind me to drink
+            <select name="waterReminderMin"><option value="0">Off</option><option value="60">every 60 min</option><option value="90">every 90 min</option><option value="120">every 120 min</option></select></label>
+          <label>At most <input name="waterReminderCap" type="number" min="1" max="12" step="1"> water reminders a day</label>
+          <p class="fineprint">A general estimate, not medical advice. Reminders count from your last glass and never appear alongside a break suggestion.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Steps</legend>
+          <label>Daily goal <input name="stepGoal" type="number" min="1000" max="50000" step="500"> steps</label>
+          <p class="fineprint">A browser can't count steps, so you type the number from your phone.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Calories (optional)</legend>
+          <label class="check"><input name="caloriesEnabled" type="checkbox"> Show a calorie log on Today</label>
+          <p class="fineprint">Off by default. Awareness only: no targets, no judgment.</p>
         </fieldset>
       </form>
       <section class="settings-section">

@@ -19,11 +19,19 @@ export function createDay(date, now) {
     segments: [],
     breaks: [],
     water: [],
+    steps: [],
+    calories: [],
+    waterReminder: { visible: false, shownCount: 0, lastAt: null },
     prompt: { visible: false, shownCount: 0, shownAt: null, snoozeUntilMs: null, pausedForDay: false },
     notice: null,
     wrappedUp: false,
     lastSeen: now,
   };
+}
+
+export function normalizeDay(day) {
+  const fresh = createDay(day.date, day.lastSeen);
+  return { ...fresh, ...day, waterReminder: { ...fresh.waterReminder, ...day.waterReminder } };
 }
 
 let seq = 0;

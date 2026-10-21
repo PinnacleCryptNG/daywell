@@ -71,6 +71,22 @@ Carried from the learner's PRD (`scope.md > Inspiration & Identity`):
 - Shows consumed, target, remaining, and a progress bar. Undo toast after each add; each entry can be edited or deleted; totals recalculate immediately.
 - [ ] Logging a glass takes one click; Undo removes it; editing an entry updates the total.
 
+### Screen time on this computer
+- A card showing today's active time on this computer (the same measured desk time, summed), labelled **Active screen time · this computer · Measured**, or *Manual* in manual mode. Shows the longest stretch. States plainly that phones, other devices and per-app usage are not included.
+- [ ] With no tracked time the card reads "No data", never 0.
+
+### Steps (manual)
+- Daily goal default 10,000 (editable). The person types their current step total from their phone; Daywell stores each update and shows the latest, a progress bar, and when it was updated, labelled **Manual · from your phone**. Undo the last update.
+- [ ] Before any update the card reads "No data"; after entering 6,200 it shows 6,200 of 10,000 with the Manual label.
+
+### Calories (optional)
+- Off by default; enabled in Settings. Manual entries (kcal + optional note), total for today, delete. Copy: "For awareness only. No targets, no judgment." No goal, no red/green colouring.
+- [ ] Card is hidden until enabled; entries add up and can be deleted.
+
+### Water reminders
+- Optional reminder every 60 / 90 / 120 min (default 90) since the last glass, only during work hours, at most 4 a day, never while a break prompt is showing. Actions: **+250 ml** or **Not now**. Logging water resets the interval.
+- [ ] Reminder appears after the interval, disappears when water is logged, and respects the cap.
+
 ### Daily reflection
 - Shows count of breaks (by source), longest continuous sitting stretch, total measured desk time, and water vs target, in neutral language. Metrics with no data say "No data" instead of 0.
 - [ ] Wrap up shows a reflection that never uses failure language.
@@ -100,10 +116,9 @@ Carried from the learner's PRD (`scope.md > Inspiration & Identity`):
 - *Assumption (agent):* a labelled **demo speed** setting (time thresholds compressed) exists so the video can show a full cycle quickly; it never fabricates idle events.
 
 ## What We're Building
-Welcome + permission flow; measured/manual desk-time clock with source chips; automatic break credit; one-at-a-time break prompt with Done/Snooze/Pause, work hours and cap; today's timeline; water logging with undo/edit; daily reflection; settings with export/delete; persistence across reloads; labelled demo speed.
+Welcome + permission flow; screen-time card; manual steps toward 10k; optional calorie log; capped water reminders; measured/manual desk-time clock with source chips; automatic break credit; one-at-a-time break prompt with Done/Snooze/Pause, work hours and cap; today's timeline; water logging with undo/edit; daily reflection; settings with export/delete; persistence across reloads; labelled demo speed.
 
 ## Deferred From the POC
-- Hydration reminders — separate schedule/cap; adds a second notifier without proving the kernel.
 - 7/30-day insights — needs days of real data; storage keeps history so it can be added.
 - Calendar-aware suppression — needs calendar OAuth.
 - fl oz units — small but not needed for the proof.
@@ -113,7 +128,7 @@ Welcome + permission flow; measured/manual desk-time clock with source chips; au
 Weekly insights from stored days; calendar-aware quiet periods; desktop companion that also sees other apps; mobile companion for steps via HealthKit/Health Connect.
 
 ## Non-Goals
-- Steps, calories, device-wide screen time — no honest web source (scope cut).
+- Automatic step counting, calorie targets/estimates, phone or per-app screen time — no honest web source (scope cut).
 - Medical advice or diagnosis.
 - Employer dashboards, leaderboards, streak-loss shaming.
 - Accounts, sync, or any server.
