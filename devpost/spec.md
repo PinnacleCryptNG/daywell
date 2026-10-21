@@ -40,7 +40,8 @@ PRD ref: `prd.md > The Core Journey`.
 - Start: `npm start` (runs `node scripts/serve.mjs`) → open `http://localhost:5173`.
 - Tests: `npm test`.
 - Demo recording: open `http://localhost:5173/?speed=60` — the labelled **Demo speed ×60** banner shows; a 50-minute threshold becomes 50 seconds. The idle window stays a real 60 s (browser minimum), so the auto-logged break is genuine.
-- Optional deploy: GitHub Pages (static) so judges can try it; not a substitute for the video.
+- Public repository: https://github.com/PinnacleCryptNG/daywell (CI runs `npm test` on Node 18/20/22).
+- Optional deploy: Vercel (static, `vercel.json` adds security headers) so judges can try it; not a substitute for the video.
 
 ## Look and Feel
 From `prd.md > Look and Feel`. CSS custom properties: `--navy #0B1020`, `--blue #3157FF`, `--cyan #22D3EE`, `--surface #F8FAFC`, `--ink #0F172A`, `--muted #64748B`, `--line #E2E8F0`. Page background warm white, cards white with 1 px line border and soft shadow, 16–20 px radius, navy header bar. Manrope 400/600/700/800; large numeric display for sitting time. Spacious, calm density. Transitions ≤ 200 ms, disabled under `prefers-reduced-motion`. Copy concise and non-judgmental.
