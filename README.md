@@ -11,6 +11,8 @@ A calm browser companion for remote workers: it notices how long you've actually
   <img src="https://img.shields.io/badge/dependencies-0-22D3EE" alt="Zero runtime dependencies">
 </p>
 
+<p align="center"><strong><a href="https://daywell-tau.vercel.app/">Try it live → daywell-tau.vercel.app</a></strong> · demo speed: <a href="https://daywell-tau.vercel.app/?speed=60">?speed=60</a></p>
+
 <p align="center"><img src="docs/screenshots/landing-desktop.png" alt="Daywell landing page" width="820"></p>
 
 ## What it does
