@@ -1,0 +1,13 @@
+{
+  "name": "daywell",
+  "version": "0.1.0",
+  "description": "A calm desktop-browser break companion that measures real desk time and credits breaks automatically.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.js"
+  }
+}
