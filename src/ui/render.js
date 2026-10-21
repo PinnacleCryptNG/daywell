@@ -54,24 +54,9 @@ export function render(ctx) {
   if (ctx.view === 'you') renderYou(ctx);
 }
 
-function sourceChip(ctx) {
-  const { day, sourceLive } = ctx;
-  if (!day.started) return null;
-  if (day.mode === 'manual') return { cls: 'chip-manual', text: 'Manual mode' };
-  if (sourceLive) return { cls: 'chip-measured', text: 'Measuring' };
-  return { cls: '', text: 'Not measuring' };
-}
-
 function renderChrome(ctx, landing) {
   const { day, view, settings } = ctx;
   document.documentElement.dataset.theme = settings.theme;
-  const c = sourceChip(ctx);
-  const el = $('source-chip');
-  el.hidden = !c;
-  if (c) {
-    el.className = `chip chip-dark ${c.cls}`;
-    el.textContent = c.text;
-  }
   $('tabs').hidden = landing;
   for (const a of document.querySelectorAll('[data-tab]')) {
     if (a.dataset.tab === view) a.setAttribute('aria-current', 'page');
