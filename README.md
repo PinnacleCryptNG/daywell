@@ -2,6 +2,12 @@
 
 A calm desktop-browser break companion for remote workers. Daywell measures how long you've **actually** been at your desk (using the browser's idle signal, not a fixed timer), credits a break automatically when you step away, and suggests one small break at a time. Every number is labelled by where it came from: measured, manual, or reported. Missing data is never shown as zero.
 
+Alongside the break companion:
+- **Screen time on this computer**: today's active time, measured from the same idle signal. Phones, other devices and per-app usage aren't included.
+- **Steps toward 10k**: you type the count from your phone (a browser can't count steps), labelled *Manual · from your phone*.
+- **Water**: one-tap logging plus gentle reminders, capped per day and never shown on top of a break suggestion.
+- **Calories (optional)**: off by default, manual entries only, no targets.
+
 Built for [Build With AI: Basics](https://learn-ai-basics.devpost.com/) with the Devpost Learn skill pack. The planning documents are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md), [build checklist](devpost/checklist.md).
 
 ## Run it
@@ -10,7 +16,7 @@ Requires Node.js 18+ and desktop Chrome or Edge (for measured mode).
 
 ```sh
 npm start        # serves on http://localhost:5173
-npm test         # engine, water, reflection and time tests
+npm test         # engine, water, habits, reflection and time tests
 ```
 
 Open `http://localhost:5173`, press **Start my day**, and allow idle detection. If you decline, or your browser doesn't support it, Daywell switches to a clearly labelled manual mode.
