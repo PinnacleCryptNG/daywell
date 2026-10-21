@@ -31,7 +31,8 @@ PRD ref: `prd.md > The Core Journey`.
 - **Idle Detection API** (Chrome/Edge 94+, secure context; `localhost` counts). Docs: https://developer.mozilla.org/en-US/docs/Web/API/Idle_Detection_API. Minimum detection window is 60 s. **Unverified on this machine — check in slice 2.**
 - **Web Storage (localStorage)**. Docs: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 - **Notifications API** (optional, background tab only). Docs: https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API
-- **Manrope** via Google Fonts with system sans fallback. https://fonts.google.com/specimen/Manrope
+- **Manrope** (variable, latin subset) self-hosted from `assets/fonts/` under the SIL Open Font License, with system sans fallback. https://fonts.google.com/specimen/Manrope
+- **Service worker** (`sw.js`, network-first cache) for offline use and `showNotification`, which phones require. Docs: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
 - **Node.js 18+** only for tooling: `node --test` for engine tests and a ~30-line static server (`scripts/serve.mjs`). No npm dependencies.
 
 ## Where It Runs and How Someone Tries It
@@ -67,11 +68,17 @@ Pure ops for manual steps (`setSteps`, `latestSteps`) and the optional calorie l
 ### Water reminders (`src/water.js > waterReminderDue`)
 Pure check of interval since the last glass/reminder, work hours, cap, and that no break prompt is showing. PRD ref: `prd.md > Water reminders`.
 
+### Device awareness (`src/device.js`)
+Pure `parseAgent(userAgent)` → browser, OS and phone/tablet/desktop; `readCapabilities()` checks idle detection, notifications, secure context, service worker and installed mode; `deviceAdvice()` and `notificationAdvice()` turn them into plain-language mode and notification guidance. Capability, not browser name, decides Measured vs Manual.
+
+### Security
+Strict Content-Security-Policy (meta tag, plus headers from the dev server): scripts only from this origin, no inline scripts, no third-party connections, `object-src 'none'`, `base-uri 'none'`. `store.js > sanitizeData` validates every setting against its limits and drops malformed or tampered entries on load (ids restricted to `[\w-]`), and user text is escaped before rendering.
+
 ### Reflection (`src/reflection.js`)
 Pure summary of a day record → counts and copy strings; "No data" for empty metrics. PRD ref: `prd.md > Daily reflection`.
 
 ### Interface (`index.html`, `styles.css`, `src/app.js`, `src/ui/*.js`)
-Renders Welcome, hero ring, timeline, breaks, water, reflection, prompt banner, toasts, settings drawer. One `render(state)` driven by a 1 s tick plus events. Tab title and optional Notification when hidden.
+Four hash-routed views: **Today** (hero ring, at-a-glance tiles, screen time and timeline, wrap-up), **Move** (breaks, steps), **Hydrate** (water drop, calories), **You** ("Your rhythm" preferences, This device, Privacy & data). Tabs sit in the top bar on desktop and become a bottom tab bar under 760 px. Break, water and welcome-back nudges render as cards at the top of the current view. One `render(state)` driven by a 1 s tick plus events. Light/dark/auto theme via `data-theme`. Tab title and optional notification when hidden.
 PRD ref: `prd.md > Screens and Layout`, `prd.md > Today's timeline`.
 
 ## Data Model
@@ -100,8 +107,12 @@ Demo speed: settings durations are divided by `speed` when the engine compares t
 ## File Structure
 ```
 daywell/
-├── index.html            # single page shell
-├── styles.css            # design tokens + layout
+├── index.html            # page shell, icon sprite, CSP
+├── styles.css            # design tokens, light/dark themes, responsive layout
+├── manifest.webmanifest  # installable app metadata
+├── sw.js                 # service worker: offline cache + notifications
+├── favicon.ico
+├── assets/               # logo, favicon, app icons, social image, self-hosted font
 ├── src/
 │   ├── app.js            # wiring: store ⇄ engine ⇄ sources ⇄ ui, 1 s tick
 │   ├── engine.js         # pure desk-time logic
@@ -110,13 +121,14 @@ daywell/
 │   ├── reflection.js     # pure day summary
 │   ├── store.js          # localStorage persistence
 │   ├── time.js           # day keys, work-hours, formatting
+│   ├── device.js         # browser/device detection + capability advice
 │   ├── sources/
 │   │   ├── idle.js       # Idle Detection adapter
 │   │   └── manual.js     # manual fallback
 │   └── ui/
-│       ├── render.js     # Today screen rendering
-│       └── settings.js   # settings drawer
-├── tests/                # node --test suites for engine/water/reflection/time
+│       ├── render.js     # view rendering
+│       └── settings.js   # Your rhythm form + summaries
+├── tests/                # node --test suites for engine/water/habits/reflection/time/store/device
 ├── scripts/serve.mjs     # zero-dependency static server
 ├── package.json          # start/test scripts, no dependencies
 ├── README.md
@@ -125,7 +137,7 @@ daywell/
 ```
 
 ## External Services and Dependencies
-None at runtime besides the Google Fonts stylesheet (falls back to system fonts offline). No keys, no rate limits, no cost.
+None at runtime. The font is self-hosted. No keys, no rate limits, no cost.
 
 ## Important Failure Modes
 - **Idle Detection unsupported or denied** → Manual mode with explanation and "Try measured mode again" in Settings.

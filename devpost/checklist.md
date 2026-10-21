@@ -106,6 +106,12 @@ Build mode: fast — learner asked to minimise back-and-forth ("Do everything yo
 
 ## Final Review
 
+- [x] Layout: nothing overlaps; even columns at laptop widths; no sideways scroll on phones
+- [ ] Mobile-first: bottom tab bar (Today / Move / Hydrate / You), 44 px tap targets, 16 px inputs, safe areas; phones fall back to Manual mode with an explanation
+- [ ] Brand kit: logo mark, favicon (SVG + ICO), app icons incl. maskable and Apple touch, web manifest, social preview image, custom icon set
+- [ ] Settings replaced by "Your rhythm": sliders, segmented choices, steppers, switch, live plain-language summary, This device, Privacy & data
+- [ ] Visual redesign: dark hero with glowing ring, at-a-glance tiles, animated water drop, steps ring, dark mode, reduced motion respected
+- [ ] Security and browser awareness: strict CSP, self-hosted font, no third-party requests, stored data validated on load, browser/device detection drives mode and notification advice
 - [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
@@ -125,4 +131,5 @@ Activity mode:
 - Timeline spans from the first tracked moment to now (minimum one hour), not fixed work hours — a full 09:00–17:00 strip made short demo stretches invisible.
 - Undo on the welcome-back notice says "Undo, I was here" and restores the earlier sitting stretch — added because the 60 s idle window can mistake reading or watching for being away.
 - Added screen-time card, manual 10k steps, optional calorie log and water reminders (slices 7–9) — learner restated the full concept after the first checkpoint and chose honest web-app versions over cutting them.
+- Final review (learner): the page looked overlapped and badly arranged, and the learner asked for a mobile-first, branded, "wow" front end, a better settings experience, and tighter security with browser awareness. The single page became four tabbed views (Today, Move, Hydrate, You), Settings became "Your rhythm", reminders now appear as inline cards at the top of the current view instead of over the content, and a small service worker was added for offline use and phone-compatible notifications. Engine, data model and kernel are unchanged.
 - Reminders outside work hours were silently held, so the learner saw none in the evening. Added "Remind me anyway today", demo speed now ignores work hours (stated in the banner), the water card shows when the next reminder is due, and desktop notification permission is requested on Start my day.

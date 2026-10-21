@@ -1,218 +1,317 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
   <title>Daywell</title>
-  <meta name="description" content="A calm break companion that measures real desk time and credits breaks automatically.">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="description" content="Breaks based on real desk time. Daywell measures how long you've actually been at your computer, credits breaks automatically, and keeps every number honest.">
+  <meta name="theme-color" content="#0B1020">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Daywell">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:title" content="Daywell: breaks based on real desk time">
+  <meta property="og:description" content="Honest numbers, no shame, nothing leaves your device.">
+  <meta property="og:image" content="assets/og-image.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="assets/fonts/manrope-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="sprite" aria-hidden="true">
+    <symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><circle cx="14" cy="4" r="2"/><path d="M10 22l2.5-7 2.5 2v5M7 12.5l3-4.5 4 1 2.5 3.5 3 .5M10 8l-1.5 5.5"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></symbol>
+    <symbol id="i-you" viewBox="0 0 24 24"><path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.2"/><circle cx="10" cy="12" r="2.2"/><circle cx="17.8" cy="18" r="2.2"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+    <symbol id="i-steps" viewBox="0 0 24 24"><path d="M8 3c2 0 3 2 3 5s-1 5-3 5-3-2-3-5 1-5 3-5zM6.5 15.5h3v1.8a1.5 1.5 0 0 1-3 0zM16 7c2 0 3 2 3 5s-1 5-3 5-3-2-3-5 1-5 3-5zM14.5 19.5h3v.3a1.5 1.5 0 0 1-3 0z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c.8 3.5 5 5.2 5 10a5 5 0 0 1-10 0c0-2.6 1.4-4 2.4-5.6.6 1.3 1.3 2 2.1 2.3C11.2 7.6 11.3 5.2 12 3z"/></symbol>
+    <symbol id="i-break" viewBox="0 0 24 24"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3M12 3v3"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-device" viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="10" rx="1.5"/><path d="M5 18h8"/><rect x="17" y="8" width="5" height="11" rx="1.2"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
+  </svg>
+
   <a class="skip" href="#main">Skip to content</a>
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand"><img src="assets/icon.svg" alt="" width="28" height="28"><span>Daywell</span></div>
-      <div class="topbar-right">
-        <span class="chip chip-dark" id="source-chip" hidden></span>
-        <button class="btn btn-ghost-dark" id="open-settings" type="button" data-action="open-settings">Settings</button>
-      </div>
+      <a class="brand" href="#today" aria-label="Daywell, today"><img src="assets/logo.svg" alt="" width="32" height="32"><span>Daywell</span></a>
+      <nav class="tabs" id="tabs" aria-label="Sections" hidden>
+        <a href="#today" data-tab="today"><svg class="i"><use href="#i-today"/></svg><span>Today</span></a>
+        <a href="#move" data-tab="move"><svg class="i"><use href="#i-move"/></svg><span>Move</span></a>
+        <a href="#water" data-tab="water"><svg class="i"><use href="#i-drop"/></svg><span>Hydrate</span></a>
+        <a href="#you" data-tab="you"><svg class="i"><use href="#i-you"/></svg><span>You</span></a>
+      </nav>
+      <span class="chip chip-dark" id="source-chip" hidden></span>
     </div>
   </header>
   <div class="demo-banner" id="demo-banner" hidden></div>
 
   <main id="main" class="page">
-    <section id="welcome" class="welcome card" aria-labelledby="welcome-title" hidden>
-      <p class="eyebrow">Good to see you</p>
-      <h1 id="welcome-title">Daywell notices how long you've really been at your desk and suggests small breaks.</h1>
-      <p class="lede">No guilt, no guessing.</p>
-      <ul class="benefits">
-        <li><strong>Measured, not a timer.</strong> Uses this browser's idle signal (keyboard, mouse, screen lock) so a walk you just took actually counts.</li>
-        <li><strong>Breaks log themselves.</strong> Step away, come back, and the break is already there with its real length.</li>
-        <li><strong>Honest numbers.</strong> Every value says where it came from. Nothing leaves this computer.</li>
-      </ul>
-      <div class="welcome-actions">
-        <button class="btn btn-primary btn-lg" type="button" data-action="start">Start my day</button>
-        <p class="fineprint" id="welcome-note">Chrome or Edge will ask to let Daywell know when you're idle. If you'd rather not, you can track manually.</p>
+    <section id="welcome" class="welcome" aria-labelledby="welcome-title" hidden>
+      <div class="welcome-hero">
+        <img class="welcome-logo" src="assets/logo.svg" alt="" width="72" height="72">
+        <p class="eyebrow eyebrow-light">For people who work at a desk</p>
+        <h1 id="welcome-title">Breaks based on <span class="grad">real desk time</span>, not a timer.</h1>
+        <p class="lede">Daywell notices how long you've actually been at your computer, suggests small breaks, and logs them when you step away. Honest numbers, no shame.</p>
+        <div class="device-card" id="welcome-device"></div>
+        <button class="btn btn-glow btn-lg" type="button" data-action="start">Start my day</button>
+        <p class="fineprint fineprint-light" id="welcome-note"></p>
       </div>
+      <ul class="features">
+        <li><span class="ico ico-blue"><svg class="i"><use href="#i-clock"/></svg></span><div><strong>Measured, not a timer</strong><p>A walk you just took actually counts.</p></div></li>
+        <li><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span><div><strong>Breaks log themselves</strong><p>Step away, come back, and it's already there.</p></div></li>
+        <li><span class="ico ico-violet"><svg class="i"><use href="#i-shield"/></svg></span><div><strong>Private by design</strong><p>No account. Nothing leaves this device.</p></div></li>
+      </ul>
     </section>
 
-    <div id="today" class="today" hidden>
-      <div id="reflection" class="card reflection" hidden aria-live="polite"></div>
-
-      <section class="card hero" aria-labelledby="hero-title">
-        <div class="ring-wrap" aria-hidden="true">
-          <svg viewBox="0 0 120 120" class="ring">
-            <circle class="ring-track" cx="60" cy="60" r="52"></circle>
-            <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"></circle>
-          </svg>
-          <div class="ring-center">
-            <span class="ring-value" id="ring-value">0:00</span>
-            <span class="ring-label" id="ring-label">sitting</span>
+    <div id="app" hidden>
+      <div class="nudges" id="nudges" aria-live="polite">
+        <div id="prompt" class="prompt" role="region" aria-label="Break suggestion" hidden></div>
+        <div id="water-reminder"></div>
+        <div id="notice" class="notice"></div>
+      </div>
+      <section class="view" id="view-today" data-view="today" aria-labelledby="hero-title">
+        <div id="reflection" class="card reflection" hidden aria-live="polite"></div>
+        <section class="hero">
+          <div class="ring-wrap" aria-hidden="true">
+            <svg viewBox="0 0 120 120" class="ring">
+              <defs><linearGradient id="ring-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5B7CFF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>
+              <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+              <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="ring-value">0:00</span>
+              <span class="ring-label" id="ring-label">sitting</span>
+            </div>
           </div>
-        </div>
-        <div class="hero-body">
-          <p class="eyebrow">Right now</p>
-          <h1 id="hero-title" class="hero-title">At your desk</h1>
-          <p class="sr-only" id="hero-sr" aria-live="polite"></p>
-          <p class="status-line" id="hero-status"></p>
-          <div class="hero-meta" id="hero-meta"></div>
-          <div class="hero-actions" id="hero-actions"></div>
-          <div id="prompt" class="prompt" role="region" aria-label="Break suggestion" aria-live="polite" hidden></div>
-          <div id="notice" class="notice" aria-live="polite"></div>
-        </div>
-      </section>
+          <div class="hero-body">
+            <p class="eyebrow eyebrow-light" id="hero-greeting"></p>
+            <h1 id="hero-title" class="hero-title">At your desk</h1>
+            <p class="sr-only" id="hero-sr" aria-live="polite"></p>
+            <p class="status-line" id="hero-status"></p>
+            <div class="hero-meta" id="hero-meta"></div>
+            <div class="hero-actions" id="hero-actions"></div>
+          </div>
+        </section>
 
-      <section class="glance" id="glance" aria-label="Today at a glance"></section>
+        <section class="glance" id="glance" aria-label="Today at a glance"></section>
 
-      <section class="card timeline-card" aria-labelledby="timeline-title" id="screen-card">
-        <div class="card-head">
-          <h2 id="timeline-title">Screen time &amp; timeline</h2>
-          <span class="chip" id="screen-chip"></span>
-        </div>
-        <div id="screen"></div>
-        <div class="card-head tl-head">
+        <section class="card" aria-labelledby="timeline-title" id="screen-card">
+          <div class="card-head">
+            <h2 id="timeline-title"><span class="ico ico-blue"><svg class="i"><use href="#i-screen"/></svg></span>Screen time</h2>
+            <span class="chip" id="screen-chip"></span>
+          </div>
+          <div id="screen"></div>
+          <div id="timeline"></div>
           <ul class="legend" aria-label="Legend">
             <li><span class="swatch swatch-desk"></span>At desk</li>
             <li><span class="swatch swatch-break"></span>Break</li>
             <li><span class="swatch swatch-away"></span>Away (short)</li>
             <li><span class="swatch swatch-none"></span>Not tracked</li>
           </ul>
-        </div>
-        <div id="timeline"></div>
+        </section>
+
+        <div class="wrap-row"><button class="btn btn-soft" type="button" data-action="wrap-up" id="wrap-btn"><svg class="i"><use href="#i-sparkle"/></svg>Wrap up my day</button></div>
       </section>
 
-      <div class="columns">
-        <div class="col">
-        <section class="card" aria-labelledby="breaks-title" id="breaks-card">
-          <div class="card-head"><h2 id="breaks-title">Breaks</h2><span class="chip" id="breaks-chip"></span></div>
-          <div id="breaks"></div>
-        </section>
-
-        <section class="card" aria-labelledby="steps-title" id="steps-card">
-          <div class="card-head"><h2 id="steps-title">Steps</h2><span class="chip chip-manual">Manual · from your phone</span></div>
-          <div id="steps-summary"></div>
-          <form class="water-custom" id="steps-form">
-            <label for="steps-input">Steps so far today (check your phone)</label>
-            <div class="inline">
-              <input id="steps-input" name="total" type="number" inputmode="numeric" min="0" max="100000" step="1" placeholder="e.g. 4200">
-              <button class="btn btn-primary" type="submit">Update</button>
-            </div>
-            <p class="field-error" id="steps-error" role="alert"></p>
-          </form>
-        </section>
-
+      <section class="view" id="view-move" data-view="move" aria-labelledby="move-title" hidden>
+        <header class="view-head"><h1 id="move-title">Move</h1><p>Breaks Daywell noticed, and your steps toward today's goal.</p></header>
+        <div class="columns">
+          <section class="card" aria-labelledby="breaks-title" id="breaks-card">
+            <div class="card-head"><h2 id="breaks-title"><span class="ico ico-cyan"><svg class="i"><use href="#i-break"/></svg></span>Breaks</h2><span class="chip" id="breaks-chip"></span></div>
+            <div id="breaks"></div>
+          </section>
+          <section class="card" aria-labelledby="steps-title" id="steps-card">
+            <div class="card-head"><h2 id="steps-title"><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span>Steps</h2><span class="chip chip-manual">Manual · from your phone</span></div>
+            <div id="steps-summary"></div>
+            <form class="entry" id="steps-form">
+              <label for="steps-input">Steps so far today (check your phone)</label>
+              <div class="inline">
+                <input id="steps-input" name="total" type="number" inputmode="numeric" min="0" max="100000" step="1" placeholder="e.g. 4200" autocomplete="off">
+                <button class="btn btn-primary" type="submit">Update</button>
+              </div>
+              <p class="field-error" id="steps-error" role="alert"></p>
+            </form>
+          </section>
         </div>
+      </section>
 
-        <div class="col">
-        <section class="card" aria-labelledby="water-title" id="water-card">
-          <div class="card-head"><h2 id="water-title">Water</h2><span class="chip">Manual</span></div>
-          <div id="water-reminder" aria-live="polite"></div>
-          <div id="water-summary"></div>
-          <div class="water-presets" role="group" aria-label="Log water">
-            <button class="btn btn-soft" type="button" data-action="water-add" data-ml="150">+150 ml</button>
-            <button class="btn btn-primary" type="button" data-action="water-add" data-ml="250">+250 ml</button>
-            <button class="btn btn-soft" type="button" data-action="water-add" data-ml="350">+350 ml</button>
-            <button class="btn btn-soft" type="button" data-action="water-add" data-ml="500">+500 ml</button>
+      <section class="view" id="view-water" data-view="water" aria-labelledby="water-view-title" hidden>
+        <header class="view-head"><h1 id="water-view-title">Hydrate</h1><p>One tap per glass. Reminders count from your last one.</p></header>
+        <div class="columns">
+          <section class="card" aria-labelledby="water-title" id="water-card">
+            <div class="card-head"><h2 id="water-title"><span class="ico ico-cyan"><svg class="i"><use href="#i-drop"/></svg></span>Water</h2><span class="chip chip-manual">Manual</span></div>
+            <div class="water-hero">
+              <div class="drop" aria-hidden="true">
+                <svg viewBox="0 0 100 120">
+                  <defs>
+                    <clipPath id="drop-clip"><path d="M50 4C50 4 12 50 12 78a38 38 0 0 0 76 0C88 50 50 4 50 4z"/></clipPath>
+                    <linearGradient id="water-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#3157FF"/></linearGradient>
+                  </defs>
+                  <path class="drop-shell" d="M50 4C50 4 12 50 12 78a38 38 0 0 0 76 0C88 50 50 4 50 4z"/>
+                  <g clip-path="url(#drop-clip)"><g id="drop-level" class="drop-level"><path class="wave" d="M-100 8 Q-75 0 -50 8 T0 8 T50 8 T100 8 T150 8 T200 8 V140 H-100 Z" fill="url(#water-g)"/></g></g>
+                  <path class="drop-outline" d="M50 4C50 4 12 50 12 78a38 38 0 0 0 76 0C88 50 50 4 50 4z"/>
+                </svg>
+                <span class="drop-pct" id="drop-pct">0%</span>
+              </div>
+              <div id="water-summary" class="water-summary"></div>
+            </div>
+            <div class="water-presets" role="group" aria-label="Log water">
+              <button class="btn btn-soft" type="button" data-action="water-add" data-ml="150">+150<small>ml</small></button>
+              <button class="btn btn-primary" type="button" data-action="water-add" data-ml="250">+250<small>ml</small></button>
+              <button class="btn btn-soft" type="button" data-action="water-add" data-ml="350">+350<small>ml</small></button>
+              <button class="btn btn-soft" type="button" data-action="water-add" data-ml="500">+500<small>ml</small></button>
+            </div>
+            <form class="entry" id="water-custom">
+              <label for="water-custom-ml">Custom amount</label>
+              <div class="inline">
+                <input id="water-custom-ml" name="ml" type="number" inputmode="numeric" min="1" max="2000" step="1" placeholder="ml" autocomplete="off">
+                <button class="btn btn-soft" type="submit">Add</button>
+              </div>
+              <p class="field-error" id="water-error" role="alert"></p>
+            </form>
+            <p class="next-line" id="water-next"></p>
+            <div id="water-list"></div>
+          </section>
+
+          <section class="card" aria-labelledby="cal-title" id="cal-card" hidden>
+            <div class="card-head"><h2 id="cal-title"><span class="ico ico-amber"><svg class="i"><use href="#i-flame"/></svg></span>Calories</h2><span class="chip chip-manual">Manual · optional</span></div>
+            <div id="cal-summary"></div>
+            <form class="entry" id="cal-form">
+              <label for="cal-kcal">Add an entry</label>
+              <div class="inline">
+                <input id="cal-kcal" name="kcal" type="number" inputmode="numeric" min="1" max="5000" step="1" placeholder="kcal" autocomplete="off">
+                <label class="sr-only" for="cal-note">Note</label>
+                <input id="cal-note" name="note" type="text" maxlength="60" placeholder="What (optional)" class="grow-input" autocomplete="off">
+                <button class="btn btn-soft" type="submit">Add</button>
+              </div>
+              <p class="field-error" id="cal-error" role="alert"></p>
+            </form>
+            <div id="cal-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-you" data-view="you" aria-labelledby="you-title" hidden>
+        <header class="view-head"><h1 id="you-title">Your rhythm</h1><p id="rhythm-summary" aria-live="polite"></p></header>
+        <form id="settings-form" class="rhythm">
+          <section class="card setting-card">
+            <h2><span class="ico ico-blue"><svg class="i"><use href="#i-break"/></svg></span>Breaks</h2>
+            <div class="field">
+              <div class="field-row"><label for="s-threshold">Suggest a break after</label><output for="s-threshold" data-out="thresholdMin"></output></div>
+              <input id="s-threshold" name="thresholdMin" type="range" min="15" max="90" step="5">
+              <p class="hint">of real, continuous sitting</p>
+            </div>
+            <fieldset class="field">
+              <legend>Count time away as a break after</legend>
+              <div class="segments">
+                <label><input type="radio" name="minBreakMin" value="1"><span>1 min</span></label>
+                <label><input type="radio" name="minBreakMin" value="2"><span>2 min</span></label>
+                <label><input type="radio" name="minBreakMin" value="3"><span>3 min</span></label>
+                <label><input type="radio" name="minBreakMin" value="5"><span>5 min</span></label>
+              </div>
+            </fieldset>
+            <div class="field field-row">
+              <label for="s-cap">Nudges per day, at most</label>
+              <div class="stepper"><button type="button" class="step-btn" data-action="step" data-target="dailyCap" data-delta="-1" aria-label="Fewer nudges">−</button><input id="s-cap" name="dailyCap" type="number" inputmode="numeric" min="1" max="20" step="1"><button type="button" class="step-btn" data-action="step" data-target="dailyCap" data-delta="1" aria-label="More nudges">+</button></div>
+            </div>
+          </section>
+
+          <section class="card setting-card">
+            <h2><span class="ico ico-violet"><svg class="i"><use href="#i-clock"/></svg></span>Work hours</h2>
+            <div class="field times">
+              <label>From <input name="workStart" type="time"></label>
+              <label>To <input name="workEnd" type="time"></label>
+            </div>
+            <div class="days" role="group" aria-label="Work days" id="work-days"></div>
+            <p class="hint">Daywell only nudges during these hours. It still measures desk time outside them.</p>
+          </section>
+
+          <section class="card setting-card">
+            <h2><span class="ico ico-cyan"><svg class="i"><use href="#i-drop"/></svg></span>Water</h2>
+            <div class="field">
+              <div class="field-row"><label for="s-water">Daily target</label><output for="s-water" data-out="waterTargetMl"></output></div>
+              <input id="s-water" name="waterTargetMl" type="range" min="1000" max="4000" step="250">
+              <p class="hint">A general estimate, not medical advice.</p>
+            </div>
+            <fieldset class="field">
+              <legend>Remind me to drink</legend>
+              <div class="segments">
+                <label><input type="radio" name="waterReminderMin" value="0"><span>Off</span></label>
+                <label><input type="radio" name="waterReminderMin" value="60"><span>60 min</span></label>
+                <label><input type="radio" name="waterReminderMin" value="90"><span>90 min</span></label>
+                <label><input type="radio" name="waterReminderMin" value="120"><span>2 h</span></label>
+              </div>
+            </fieldset>
+            <div class="field field-row">
+              <label for="s-wcap">Water reminders per day, at most</label>
+              <div class="stepper"><button type="button" class="step-btn" data-action="step" data-target="waterReminderCap" data-delta="-1" aria-label="Fewer water reminders">−</button><input id="s-wcap" name="waterReminderCap" type="number" inputmode="numeric" min="1" max="12" step="1"><button type="button" class="step-btn" data-action="step" data-target="waterReminderCap" data-delta="1" aria-label="More water reminders">+</button></div>
+            </div>
+          </section>
+
+          <section class="card setting-card">
+            <h2><span class="ico ico-violet"><svg class="i"><use href="#i-steps"/></svg></span>Steps &amp; calories</h2>
+            <div class="field">
+              <div class="field-row"><label for="s-steps">Daily step goal</label><output for="s-steps" data-out="stepGoal"></output></div>
+              <input id="s-steps" name="stepGoal" type="range" min="2000" max="20000" step="500">
+              <p class="hint">A browser can't count steps, so you type the number from your phone.</p>
+            </div>
+            <label class="switch-row"><span><strong>Calorie log</strong><span class="hint">Off by default. Awareness only: no targets, no judgment.</span></span><input type="checkbox" name="caloriesEnabled" role="switch" class="switch"></label>
+          </section>
+
+          <section class="card setting-card">
+            <h2><span class="ico ico-blue"><svg class="i"><use href="#i-sparkle"/></svg></span>Appearance</h2>
+            <fieldset class="field">
+              <legend>Theme</legend>
+              <div class="segments">
+                <label><input type="radio" name="theme" value="system"><span>Auto</span></label>
+                <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+                <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+              </div>
+            </fieldset>
+          </section>
+        </form>
+
+        <section class="card setting-card" aria-labelledby="device-title">
+          <h2 id="device-title"><span class="ico ico-cyan"><svg class="i"><use href="#i-device"/></svg></span>This device</h2>
+          <p class="device-where" id="device-where"></p>
+          <ul class="caps" id="device-caps"></ul>
+          <p class="hint" id="measure-explain"></p>
+          <div class="settings-actions" id="measure-actions"></div>
+          <h3><svg class="i"><use href="#i-bell"/></svg>Notifications</h3>
+          <p class="hint" id="notify-explain"></p>
+          <div class="settings-actions" id="notify-actions"></div>
+        </section>
+
+        <section class="card setting-card privacy" aria-labelledby="privacy-title">
+          <h2 id="privacy-title"><span class="ico ico-green"><svg class="i"><use href="#i-shield"/></svg></span>Privacy &amp; data</h2>
+          <ul class="promises">
+            <li><svg class="i"><use href="#i-check"/></svg>Stored only in this browser: no account, no server, no analytics.</li>
+            <li><svg class="i"><use href="#i-check"/></svg>Daywell never sees what you type or which apps you use.</li>
+            <li><svg class="i"><use href="#i-check"/></svg>No third-party scripts or fonts; a strict content policy blocks anything else.</li>
+          </ul>
+          <p class="hint" id="storage-size"></p>
+          <div class="settings-actions">
+            <button class="btn btn-soft" type="button" data-action="export">Export my data</button>
+            <button class="btn btn-danger" type="button" data-action="delete-all">Delete everything</button>
           </div>
-          <form class="water-custom" id="water-custom">
-            <label for="water-custom-ml">Custom amount</label>
-            <div class="inline">
-              <input id="water-custom-ml" name="ml" type="number" inputmode="numeric" min="1" max="2000" step="1" placeholder="ml">
-              <button class="btn btn-soft" type="submit">Add</button>
-            </div>
-            <p class="field-error" id="water-error" role="alert"></p>
-          </form>
-          <div id="water-list"></div>
         </section>
-
-        <section class="card" aria-labelledby="cal-title" id="cal-card" hidden>
-          <div class="card-head"><h2 id="cal-title">Calories</h2><span class="chip chip-manual">Manual · optional</span></div>
-          <div id="cal-summary"></div>
-          <form class="water-custom" id="cal-form">
-            <label for="cal-kcal">Add an entry</label>
-            <div class="inline">
-              <input id="cal-kcal" name="kcal" type="number" inputmode="numeric" min="1" max="5000" step="1" placeholder="kcal">
-              <label class="sr-only" for="cal-note">Note</label>
-              <input id="cal-note" name="note" type="text" maxlength="60" placeholder="What (optional)" class="wide">
-              <button class="btn btn-soft" type="submit">Add</button>
-            </div>
-            <p class="field-error" id="cal-error" role="alert"></p>
-          </form>
-          <div id="cal-list"></div>
-        </section>
-        </div>
-      </div>
-
-      <div class="wrap-row"><button class="btn btn-soft" type="button" data-action="wrap-up" id="wrap-btn">Wrap up my day</button></div>
+      </section>
     </div>
   </main>
-
-  <aside id="settings" class="drawer" aria-labelledby="settings-title" hidden>
-    <div class="drawer-scrim" data-action="close-settings"></div>
-    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <div class="drawer-head">
-        <h2 id="settings-title">Settings</h2>
-        <button class="btn btn-ghost" type="button" data-action="close-settings" aria-label="Close settings">Close</button>
-      </div>
-      <form id="settings-form" class="settings-form">
-        <fieldset>
-          <legend>Breaks</legend>
-          <label>Suggest a break after
-            <select name="thresholdMin"><option>20</option><option>30</option><option>45</option><option>50</option><option>60</option></select> min of sitting</label>
-          <label>Count time away as a break after
-            <select name="minBreakMin"><option>1</option><option>2</option><option>3</option><option>5</option></select> min</label>
-          <label>At most
-            <input name="dailyCap" type="number" min="1" max="20" step="1"> nudges a day</label>
-        </fieldset>
-        <fieldset>
-          <legend>Work hours</legend>
-          <div class="inline"><label>From <input name="workStart" type="time"></label><label>to <input name="workEnd" type="time"></label></div>
-          <div class="days" role="group" aria-label="Work days" id="work-days"></div>
-          <p class="fineprint">Daywell only nudges during work hours. It still measures desk time outside them.</p>
-        </fieldset>
-        <fieldset>
-          <legend>Water</legend>
-          <label>Daily target <input name="waterTargetMl" type="number" min="250" max="6000" step="50"> ml</label>
-          <label>Remind me to drink
-            <select name="waterReminderMin"><option value="0">Off</option><option value="60">every 60 min</option><option value="90">every 90 min</option><option value="120">every 120 min</option></select></label>
-          <label>At most <input name="waterReminderCap" type="number" min="1" max="12" step="1"> water reminders a day</label>
-          <p class="fineprint">A general estimate, not medical advice. Reminders count from your last glass and never appear alongside a break suggestion.</p>
-        </fieldset>
-        <fieldset>
-          <legend>Steps</legend>
-          <label>Daily goal <input name="stepGoal" type="number" min="1000" max="50000" step="500"> steps</label>
-          <p class="fineprint">A browser can't count steps, so you type the number from your phone.</p>
-        </fieldset>
-        <fieldset>
-          <legend>Calories (optional)</legend>
-          <label class="check"><input name="caloriesEnabled" type="checkbox"> Show a calorie log on Today</label>
-          <p class="fineprint">Off by default. Awareness only: no targets, no judgment.</p>
-        </fieldset>
-      </form>
-      <section class="settings-section">
-        <h3>How Daywell measures</h3>
-        <p id="measure-explain" class="fineprint"></p>
-        <div class="settings-actions" id="measure-actions"></div>
-      </section>
-      <section class="settings-section">
-        <h3>Notifications</h3>
-        <p id="notify-explain" class="fineprint"></p>
-        <div class="settings-actions" id="notify-actions"></div>
-      </section>
-      <section class="settings-section">
-        <h3>Your data</h3>
-        <p class="fineprint">Everything is stored only in this browser. No account, no server, no analytics.</p>
-        <div class="settings-actions">
-          <button class="btn btn-soft" type="button" data-action="export">Export data (JSON)</button>
-          <button class="btn btn-danger" type="button" data-action="delete-all">Delete all data</button>
-        </div>
-      </section>
-    </div>
-  </aside>
 
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script type="module" src="src/app.js"></script>

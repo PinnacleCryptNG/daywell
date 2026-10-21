@@ -3,9 +3,13 @@ import { formatClock, formatDuration, formatTimer, inWorkHours, MINUTE } from '.
 import { lastWaterAt, waterReminderNextAt, waterTotal } from '../water.js';
 import { caloriesTotal, latestSteps } from '../habits.js';
 import { summarize } from '../reflection.js';
+import { deviceAdvice, notificationAdvice } from '../device.js';
+import { measureExplain, rhythmSummary } from './settings.js';
 
 const $ = (id) => document.getElementById(id);
 const RING = 2 * Math.PI * 52;
+const MINI = 2 * Math.PI * 44;
+export const VIEWS = ['today', 'move', 'water', 'you'];
 
 const SUGGESTIONS = [
   'Take a 3-minute walk, maybe refill your water on the way.',
@@ -23,16 +27,19 @@ function patch(el, html) {
   }
 }
 
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-
+export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const icon = (name) => `<svg class="i" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 const chip = (source) => `<span class="chip chip-${source}">${SOURCE_LABEL[source]}</span>`;
 
 export function render(ctx) {
   const { day } = ctx;
   $('welcome').hidden = day.started;
-  $('today').hidden = !day.started;
+  $('app').hidden = !day.started;
   renderChrome(ctx);
-  if (!day.started) return;
+  if (!day.started) {
+    renderWelcome(ctx);
+    return;
+  }
   renderHero(ctx);
   renderGlance(ctx);
   renderScreen(ctx);
@@ -43,17 +50,20 @@ export function render(ctx) {
   renderWater(ctx);
   renderCalories(ctx);
   renderReflection(ctx);
+  if (ctx.view === 'you') renderYou(ctx);
 }
 
 function sourceChip(ctx) {
   const { day, sourceLive } = ctx;
   if (!day.started) return null;
   if (day.mode === 'manual') return { cls: 'chip-manual', text: 'Manual mode' };
-  if (sourceLive) return { cls: 'chip-measured', text: 'Measured · this computer' };
+  if (sourceLive) return { cls: 'chip-measured', text: 'Measuring' };
   return { cls: '', text: 'Not measuring' };
 }
 
 function renderChrome(ctx) {
+  const { day, view, settings } = ctx;
+  document.documentElement.dataset.theme = settings.theme;
   const c = sourceChip(ctx);
   const el = $('source-chip');
   el.hidden = !c;
@@ -61,14 +71,36 @@ function renderChrome(ctx) {
     el.className = `chip chip-dark ${c.cls}`;
     el.textContent = c.text;
   }
+  $('tabs').hidden = !day.started;
+  for (const a of document.querySelectorAll('[data-tab]')) {
+    if (a.dataset.tab === view) a.setAttribute('aria-current', 'page');
+    else a.removeAttribute('aria-current');
+  }
+  for (const v of document.querySelectorAll('[data-view]')) v.hidden = v.dataset.view !== view;
   const demo = $('demo-banner');
   demo.hidden = ctx.speed === 1;
   if (ctx.speed !== 1) {
     patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Work hours are ignored. Idle detection and durations are real. <a href="./">Exit demo speed</a>`);
   }
-  const promptUp = ctx.day.prompt.visible;
-  const waterUp = ctx.day.waterReminder?.visible;
+  const promptUp = day.prompt.visible;
+  const waterUp = day.waterReminder?.visible;
   document.title = promptUp ? '• Time for a short break · Daywell' : waterUp ? '• Time for some water · Daywell' : 'Daywell';
+}
+
+function renderWelcome(ctx) {
+  const a = deviceAdvice(ctx.device);
+  patch($('welcome-device'), `${icon(a.mode === 'measured' ? 'check' : 'device')}<div><strong>${esc(a.where)} · ${a.headline}</strong><p>${esc(a.detail)}</p></div>`);
+  const notes = [];
+  if (a.mode === 'measured') notes.push('Your browser will ask to let Daywell know when you\'re idle.');
+  if (ctx.device.caps.notifications === 'default') notes.push('It may also ask whether Daywell can show reminders as notifications.');
+  notes.push('You can say no to either.');
+  $('welcome-note').textContent = a.mode === 'measured' || ctx.device.caps.notifications === 'default' ? notes.join(' ') : 'Nothing to allow: Daywell works without permissions here.';
+}
+
+function greeting(now) {
+  const h = new Date(now).getHours();
+  const part = h < 5 ? 'Working late' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  return `${part} · ${new Date(now).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}`;
 }
 
 function renderHero(ctx) {
@@ -94,8 +126,10 @@ function renderHero(ctx) {
   $('ring-value').textContent = value;
   $('ring-label').textContent = label;
   $('ring-fill').style.strokeDashoffset = String(RING * (1 - progress));
+  $('ring-fill').style.opacity = progress > 0 ? '1' : '0';
   wrap.classList.toggle('is-away', st === 'away');
   wrap.classList.toggle('is-over', st === 'sitting' && sit >= thresholdMs);
+  $('hero-greeting').textContent = greeting(now);
 
   const titles = { sitting: 'At your desk', away: 'Away from your desk', stopped: 'Not tracking right now' };
   $('hero-title').textContent = titles[st];
@@ -117,7 +151,7 @@ function renderHero(ctx) {
     lineAction = '<button class="btn-link" type="button" data-action="resume">Resume nudges</button>';
   } else if (!canNudgeNow(now, { ...settings, speed }, day)) {
     line = `Outside your work hours (${settings.workStart}–${settings.workEnd}), so break and water reminders are on hold. Desk time is still measured.`;
-    lineAction = '<button class="btn btn-soft btn-sm" type="button" data-action="ignore-hours">Remind me anyway today</button> <button class="btn-link" type="button" data-action="open-settings">Change hours</button>';
+    lineAction = '<span class="hero-inline"><button class="btn btn-soft btn-sm" type="button" data-action="ignore-hours">Remind me anyway today</button> <button class="btn-link" type="button" data-action="open-settings">Change hours</button></span>';
   } else if (p.shownCount >= settings.dailyCap && !p.visible) {
     line = `You've had all ${settings.dailyCap} nudges for today. Daywell will stay quiet.`;
   } else if (p.visible) {
@@ -133,20 +167,20 @@ function renderHero(ctx) {
   const sourceText = day.mode === 'manual'
     ? chip('manual')
     : sourceLive ? chip('measured') : '<span class="chip">Not tracked</span>';
-  patch($('hero-meta'), `${sourceText}<span class="fineprint">Threshold ${settings.thresholdMin} min${speed !== 1 ? ` (×${speed} demo)` : ''}</span>`);
+  patch($('hero-meta'), `${sourceText}<span class="fineprint">Break after ${settings.thresholdMin} min${speed !== 1 ? ` (×${speed} demo)` : ''}</span>`);
 
   let actions = '';
   if (day.mode === 'manual') {
     actions = st === 'sitting'
-      ? '<button class="btn btn-soft" type="button" data-action="manual-away">I\'m stepping away</button>'
-      : '<button class="btn btn-primary" type="button" data-action="manual-active">I\'m at my desk</button>';
+      ? `<button class="btn btn-soft" type="button" data-action="manual-away">${icon('move')}I'm stepping away</button>`
+      : `<button class="btn btn-glow" type="button" data-action="manual-active">${icon('screen')}I'm at my desk</button>`;
   } else if (!sourceLive) {
-    actions = '<button class="btn btn-primary" type="button" data-action="resume-measuring">Resume measuring</button>';
+    actions = `<button class="btn btn-glow" type="button" data-action="resume-measuring">${icon('clock')}Resume measuring</button>`;
   }
-  if (ui.sourceError === 'denied' || ui.sourceError === 'unsupported') {
-    actions += `<p class="fineprint">${ui.sourceError === 'denied'
-      ? 'Idle permission was declined, so Daywell is in manual mode. You can try measured mode again in Settings.'
-      : 'This browser has no idle detection (try Chrome or Edge on desktop), so Daywell is in manual mode.'}</p>`;
+  if (ui.sourceError === 'denied') {
+    actions += '<p class="fineprint">Idle permission was declined, so Daywell is in manual mode. You can try measured mode again under You.</p>';
+  } else if (ui.sourceError === 'unsupported' && day.mode === 'manual') {
+    actions += `<p class="fineprint">${ctx.device.form === 'desktop' ? `${esc(ctx.device.browser)} can't share idle signals, so tap when you step away and come back.` : 'This device can\'t share idle signals, so tap when you step away and come back.'}</p>`;
   }
   patch($('hero-actions'), actions);
 
@@ -155,25 +189,27 @@ function renderHero(ctx) {
   if (p.visible) {
     const tip = SUGGESTIONS[(p.shownCount - 1 + SUGGESTIONS.length) % SUGGESTIONS.length];
     patch(promptEl, `
-      <h3>You've been sitting for ${formatDuration(sit)}.</h3>
-      <p>${tip}</p>
-      <div class="prompt-actions">
-        <button class="btn btn-primary" type="button" data-action="done">Done</button>
-        <button class="btn btn-soft" type="button" data-action="snooze" data-min="10">Snooze 10 min</button>
-        <button class="btn btn-soft" type="button" data-action="snooze" data-min="30">Snooze 30 min</button>
-        <button class="btn btn-ghost" type="button" data-action="pause">Pause for today</button>
+      <div class="nudge-head"><span class="ico ico-blue">${icon('move')}</span>
+        <div><h3>You've been sitting for ${formatDuration(sit)}.</h3><p>${tip}</p></div></div>
+      <div class="nudge-actions">
+        <button class="btn btn-primary" type="button" data-action="done">${icon('check')}Done</button>
+        <button class="btn btn-soft btn-sm" type="button" data-action="snooze" data-min="10">Snooze 10 min</button>
+        <button class="btn btn-soft btn-sm" type="button" data-action="snooze" data-min="30">30 min</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-action="pause">${icon('pause')}Pause today</button>
       </div>`);
   }
 
   const n = day.notice;
   let notice = '';
   if (n?.kind === 'break') {
-    notice = `<div class="notice-inner"><span><strong>Welcome back.</strong> Break logged: ${formatDuration(n.durationMs)} away.</span><span class="spacer"></span>
-      <button class="btn-link" type="button" data-action="undo-break" data-id="${n.breakId}">Undo, I was here</button>
-      <button class="btn-link" type="button" data-action="dismiss-notice">Dismiss</button></div>`;
+    notice = `<div class="nudge"><div class="nudge-head"><span class="ico ico-cyan">${icon('break')}</span>
+      <div><h3>Welcome back.</h3><p>Break logged: ${formatDuration(n.durationMs)} away.</p></div></div>
+      <div class="nudge-actions"><button class="btn btn-soft btn-sm" type="button" data-action="undo-break" data-id="${esc(n.breakId)}">Undo, I was here</button>
+      <button class="btn-link" type="button" data-action="dismiss-notice">Dismiss</button></div></div>`;
   } else if (n?.kind === 'reported') {
-    notice = `<div class="notice-inner"><span><strong>Enjoy the break.</strong> ${day.mode === 'measured' ? 'If you step away, Daywell will measure how long.' : 'Logged as reported.'}</span><span class="spacer"></span>
-      <button class="btn-link" type="button" data-action="dismiss-notice">Dismiss</button></div>`;
+    notice = `<div class="nudge"><div class="nudge-head"><span class="ico ico-cyan">${icon('sparkle')}</span>
+      <div><h3>Enjoy the break.</h3><p>${day.mode === 'measured' ? 'If you step away, Daywell will measure how long.' : 'Logged as reported.'}</p></div></div>
+      <div class="nudge-actions"><button class="btn-link" type="button" data-action="dismiss-notice">Dismiss</button></div></div>`;
   }
   patch($('notice'), notice);
 }
@@ -220,8 +256,7 @@ function renderBreaks(ctx) {
       <span class="grow">${b.durationMs == null ? 'Break (length not measured)' : `${formatDuration(b.durationMs)} away`}</span>
       ${chip(b.source)}</li>`).join('');
   patch($('breaks'), `
-    <div class="big-number">${n}</div>
-    <div class="big-sub">${n ? `movement break${n === 1 ? '' : 's'} today${measured && measured !== n ? ` · ${measured} measured` : ''}` : 'breaks today'}</div>
+    <div class="big-number">${n} <span class="big-sub">${n ? `movement break${n === 1 ? '' : 's'} today${measured && measured !== n ? ` · ${measured} measured` : ''}` : 'breaks today'}</span></div>
     ${n ? `<ul class="list">${rows}</ul>` : '<p class="empty">No breaks yet today. Your first one will appear here, logged automatically when you step away.</p>'}`);
 }
 
@@ -229,14 +264,17 @@ function renderWater(ctx) {
   const { day, settings, ui } = ctx;
   const total = waterTotal(day.water);
   const target = settings.waterTargetMl;
-  const pct = Math.min(100, (total / target) * 100);
+  const ratio = Math.min(1, total / target);
+  $('drop-level').style.transform = `translateY(${(122 - ratio * 120).toFixed(1)}px)`;
+  $('drop-pct').textContent = `${Math.round((total / target) * 100)}%`;
   patch($('water-summary'), `
     <div class="big-number">${total.toLocaleString()} <span class="big-sub">of ${target.toLocaleString()} ml</span></div>
-    <div class="progress" role="progressbar" aria-label="Water today" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${total}"><span style="width:${pct}%"></span></div>
-    <div class="big-sub">${total >= target ? 'Target reached. Nicely done.' : `${(target - total).toLocaleString()} ml to go · target is a general estimate, not medical advice`}</div>`);
+    <div class="progress" role="progressbar" aria-label="Water today" aria-valuemin="0" aria-valuemax="${target}" aria-valuenow="${total}"><span style="width:${ratio * 100}%"></span></div>
+    <div class="big-sub">${total >= target ? 'Target reached. Nicely done.' : `${(target - total).toLocaleString()} ml to go`}</div>
+    <p class="fineprint">The target is a general estimate, not medical advice.</p>`);
   const rows = [...day.water].reverse().map((w) => ui.editingWaterId === w.id
     ? `<li><span class="time">${formatClock(w.at)}</span>
-        <span class="grow"><label class="sr-only" for="edit-${w.id}">Amount in ml</label><input id="edit-${w.id}" type="number" min="1" max="2000" value="${w.ml}"> ml</span>
+        <span class="grow"><label class="sr-only" for="edit-${w.id}">Amount in ml</label><input id="edit-${w.id}" type="number" inputmode="numeric" min="1" max="2000" value="${w.ml}"> ml</span>
         <button class="btn-link" type="button" data-action="water-save" data-id="${w.id}">Save</button>
         <button class="btn-link" type="button" data-action="water-cancel">Cancel</button></li>`
     : `<li><span class="time">${formatClock(w.at)}</span><span class="grow">${w.ml} ml</span>
@@ -264,9 +302,11 @@ function renderScreen(ctx) {
       <p class="fineprint screen-note">${note}</p></div>`);
 }
 
-function tile(href, label, value, sub, pct) {
-  return `<a class="tile" href="${href}"><span class="tile-label">${label}</span><b class="tile-value">${value}</b>
-    ${pct == null ? '<span class="tile-bar tile-bar-empty"></span>' : `<span class="tile-bar"><span style="width:${Math.min(100, pct)}%"></span></span>`}
+function tile({ href, ico, tone, label, value, sub, pct }) {
+  const empty = value === 'No data';
+  return `<a class="tile" href="${href}"><span class="tile-top"><span class="ico ico-${tone}">${icon(ico)}</span><span class="tile-label">${label}</span></span>
+    <b class="tile-value${empty ? ' is-empty' : ''}">${value}</b>
+    <span class="tile-bar">${pct == null ? '' : `<span style="width:${Math.min(100, pct).toFixed(1)}%"></span>`}</span>
     <span class="tile-sub">${sub}</span></a>`;
 }
 
@@ -278,52 +318,55 @@ function renderGlance(ctx) {
   const kcal = caloriesTotal(day.calories);
   const n = day.breaks.length;
   const tiles = [
-    tile('#breaks-card', 'Breaks', String(n), n ? 'small pauses add up' : 'none yet', null),
-    tile('#screen-card', 'Screen time', s ? formatDuration(s.total) : 'No data', day.mode === 'manual' ? 'manual' : 'measured · this computer', null),
-    tile('#steps-card', 'Steps', steps ? steps.total.toLocaleString() : 'No data', `goal ${settings.stepGoal.toLocaleString()}`, steps ? (steps.total / settings.stepGoal) * 100 : null),
-    tile('#water-card', 'Water', water == null ? 'No data' : `${water.toLocaleString()} ml`, `target ${settings.waterTargetMl.toLocaleString()} ml`, water == null ? null : (water / settings.waterTargetMl) * 100),
+    { href: '#move', ico: 'break', tone: 'cyan', label: 'Breaks', value: String(n), sub: n ? 'small pauses add up' : 'none yet', pct: null },
+    { href: '#screen-card', ico: 'screen', tone: 'blue', label: 'Screen', value: s ? formatDuration(s.total) : 'No data', sub: day.mode === 'manual' ? 'manual' : 'measured · this computer', pct: null },
+    { href: '#move', ico: 'steps', tone: 'violet', label: 'Steps', value: steps ? steps.total.toLocaleString() : 'No data', sub: `goal ${settings.stepGoal.toLocaleString()}`, pct: steps ? (steps.total / settings.stepGoal) * 100 : null },
+    { href: '#water', ico: 'drop', tone: 'cyan', label: 'Water', value: water == null ? 'No data' : `${water.toLocaleString()} ml`, sub: `target ${settings.waterTargetMl.toLocaleString()} ml`, pct: water == null ? null : (water / settings.waterTargetMl) * 100 },
   ];
-  if (settings.caloriesEnabled) tiles.push(tile('#cal-card', 'Calories', kcal == null ? 'No data' : `${kcal.toLocaleString()} kcal`, 'awareness only', null));
+  if (settings.caloriesEnabled) tiles.push({ href: '#water', ico: 'flame', tone: 'amber', label: 'Calories', value: kcal == null ? 'No data' : `${kcal.toLocaleString()} kcal`, sub: 'awareness only', pct: null });
   $('glance').classList.toggle('glance-5', tiles.length === 5);
-  patch($('glance'), tiles.join(''));
+  patch($('glance'), tiles.map(tile).join(''));
 }
 
 function renderSteps(ctx) {
   const { day, settings } = ctx;
   const goal = settings.stepGoal;
   const last = latestSteps(day.steps);
+  const ratio = last ? Math.min(1, last.total / goal) : 0;
+  const ring = `<div class="mini-ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="44"/>
+    <circle class="fill" cx="50" cy="50" r="44" stroke-dasharray="${MINI.toFixed(2)}" stroke-dashoffset="${(MINI * (1 - ratio)).toFixed(2)}"/></svg>${icon('steps')}</div>`;
   if (!last) {
-    patch($('steps-summary'), `<div class="big-number">No data</div><div class="big-sub">Goal ${goal.toLocaleString()} steps. Type today's count from your phone below.</div>`);
+    patch($('steps-summary'), `<div class="steps-hero">${ring}<div><div class="big-number">No data</div><div class="big-sub">Goal ${goal.toLocaleString()} steps. Type today's count from your phone below.</div></div></div>`);
     return;
   }
-  const pct = Math.min(100, (last.total / goal) * 100);
-  patch($('steps-summary'), `
-    <div class="big-number">${last.total.toLocaleString()} <span class="big-sub">of ${goal.toLocaleString()} steps</span></div>
-    <div class="progress" role="progressbar" aria-label="Steps today" aria-valuemin="0" aria-valuemax="${goal}" aria-valuenow="${last.total}"><span style="width:${pct}%"></span></div>
-    <div class="big-sub">${last.total >= goal ? 'Goal reached. Nicely done.' : `${(goal - last.total).toLocaleString()} to go`} · updated ${formatClock(last.at)}
-      <button class="btn-link" type="button" data-action="steps-undo" data-id="${last.id}">Undo update</button></div>`);
+  patch($('steps-summary'), `<div class="steps-hero">${ring}<div>
+    <div class="big-number">${last.total.toLocaleString()} <span class="big-sub">of ${goal.toLocaleString()}</span></div>
+    <div class="big-sub">${last.total >= goal ? 'Goal reached. Nicely done.' : `${(goal - last.total).toLocaleString()} to go`} · updated ${formatClock(last.at)}</div>
+    <button class="btn-link" type="button" data-action="steps-undo" data-id="${last.id}">Undo update</button></div></div>`);
 }
 
 function renderWaterReminder(ctx) {
-  const { day, now } = ctx;
+  const { day, now, settings, speed } = ctx;
   const r = day.waterReminder;
+  let text;
+  if (!settings.waterReminderMin) text = 'Water reminders are off. <button class="btn-link" type="button" data-action="open-settings">Turn on</button>';
+  else if (r.shownCount >= settings.waterReminderCap) text = `You've had all ${settings.waterReminderCap} water reminders for today.`;
+  else if (r.visible) text = 'A water reminder is showing now.';
+  else if (!canNudgeNow(now, { ...settings, speed }, day)) text = 'Water reminders are on hold outside work hours.';
+  else {
+    const next = waterReminderNextAt(day, settings, now, speed);
+    text = `Next water reminder in ${formatDuration(Math.max(0, next - now))}${day.prompt.visible ? ', after your break' : ''}.`;
+  }
+  patch($('water-next'), `${icon('bell')}<span>${text}</span>`);
   if (!r?.visible) {
-    const { settings, speed } = ctx;
-    let text;
-    if (!settings.waterReminderMin) text = 'Water reminders are off. <button class="btn-link" type="button" data-action="open-settings">Turn on</button>';
-    else if (r.shownCount >= settings.waterReminderCap) text = `You've had all ${settings.waterReminderCap} water reminders for today.`;
-    else if (!canNudgeNow(now, { ...settings, speed }, day)) text = 'Water reminders are on hold outside work hours.';
-    else {
-      const next = waterReminderNextAt(day, settings, now, speed);
-      text = `Next water reminder in ${formatDuration(Math.max(0, next - now))}${day.prompt.visible ? ', after your break' : ''}.`;
-    }
-    patch($('water-reminder'), `<p class="fineprint">${text}</p>`);
+    patch($('water-reminder'), '');
     return;
   }
   const last = lastWaterAt(day);
-  patch($('water-reminder'), `<div class="notice-inner"><span><strong>Time for some water?</strong> ${last ? `Your last glass was at ${formatClock(last)}.` : 'Nothing logged yet today.'}</span><span class="spacer"></span>
-    <button class="btn btn-primary" type="button" data-action="water-remind-log">+250 ml</button>
-    <button class="btn-link" type="button" data-action="water-remind-dismiss">Not now</button></div>`);
+  patch($('water-reminder'), `<div class="nudge"><div class="nudge-head"><span class="ico ico-cyan">${icon('drop')}</span>
+    <div><h3>Time for some water?</h3><p>${last ? `Your last glass was at ${formatClock(last)}.` : 'Nothing logged yet today.'}</p></div></div>
+    <div class="nudge-actions"><button class="btn btn-primary" type="button" data-action="water-remind-log">${icon('drop')}+250 ml</button>
+    <button class="btn-link" type="button" data-action="water-remind-dismiss">Not now</button></div></div>`);
 }
 
 function renderCalories(ctx) {
@@ -359,4 +402,31 @@ function renderReflection(ctx) {
     </div>
     <p>${s.waterLine} Time when Daywell wasn't open isn't counted either way.</p>
     <button class="btn btn-soft" type="button" data-action="unwrap">Back to today</button>`);
+}
+
+const NOTIFY_STATE = { granted: 'on', default: 'available, off', denied: 'blocked', unsupported: 'not available' };
+
+function renderYou(ctx) {
+  const { day, settings, sourceLive, ui, device, storageBytes } = ctx;
+  const { caps } = device;
+  const advice = deviceAdvice(device);
+  $('rhythm-summary').textContent = rhythmSummary(settings);
+  $('device-where').textContent = `${advice.where} · ${advice.headline}`;
+  const cap = (ok, text) => `<li class="${ok ? 'ok' : 'no'}">${icon(ok ? 'check' : 'x')}<span>${text}</span></li>`;
+  patch($('device-caps'), [
+    cap(caps.idle, `Idle signal for automatic breaks: ${caps.idle ? 'available' : 'not available'}`),
+    cap(caps.notifications === 'granted', `System notifications: ${NOTIFY_STATE[caps.notifications]}`),
+    cap(caps.secure, `Secure connection: ${caps.secure ? 'yes' : 'no'}`),
+    cap(caps.serviceWorker, `Works offline: ${caps.serviceWorker ? 'yes' : 'no'}`),
+    cap(caps.standalone, caps.standalone ? 'Installed as an app' : 'Not installed: use your browser\'s Install or Add to Home Screen option'),
+  ].join(''));
+  $('measure-explain').textContent = caps.idle || day.mode === 'measured' ? measureExplain(day.mode, sourceLive, ui.sourceError) : advice.detail;
+  patch($('measure-actions'), !caps.idle ? ''
+    : day.mode === 'measured' && sourceLive
+      ? '<button class="btn btn-soft" type="button" data-action="use-manual">Switch to manual mode</button>'
+      : '<button class="btn btn-soft" type="button" data-action="retry-measured">Try measured mode</button>');
+  $('notify-explain').textContent = notificationAdvice(device);
+  patch($('notify-actions'), caps.notifications === 'default'
+    ? `<button class="btn btn-soft" type="button" data-action="enable-notifications">${icon('bell')}Turn on notifications</button>` : '');
+  $('storage-size').textContent = `Using ${(storageBytes / 1024).toFixed(1)} KB in this browser.`;
 }

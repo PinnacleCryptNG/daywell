@@ -5,8 +5,9 @@ import { addWater, editWater, removeWater, validAmount, waterReminderDue } from 
 import { addCalories, removeEntry, setSteps, validKcal, validSteps } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
 import { createManualSource } from './sources/manual.js';
-import { render } from './ui/render.js';
-import { fillSettings, measureExplain, readSettings } from './ui/settings.js';
+import { VIEWS, render } from './ui/render.js';
+import { fillSettings, readSettings, syncOutputs } from './ui/settings.js';
+import { detectDevice, readCapabilities } from './device.js';
 
 const params = new URLSearchParams(location.search);
 const speed = Math.min(600, Math.max(1, Number.parseInt(params.get('speed'), 10) || 1));
@@ -15,6 +16,8 @@ let data = loadData();
 let settings = data.settings;
 let day = normalizeDay(data.days[dateKey(Date.now())] ?? createDay(dateKey(Date.now()), Date.now()));
 let source = null;
+const device = detectDevice(window);
+let swReg = null;
 const ui = { editingWaterId: null, sourceError: null, toastTimer: null, lastPromptAt: null, lastWaterReminderAt: null };
 
 const engineSettings = () => ({ ...settings, speed });
@@ -26,27 +29,21 @@ function persist() {
   saveData(data);
 }
 
+const currentView = () => {
+  const hash = location.hash.slice(1);
+  return VIEWS.includes(hash) ? hash : 'today';
+};
+
 function draw() {
-  render({ day, settings, speed, now: Date.now(), sourceLive: sourceLive(), ui });
   const form = document.getElementById('settings-form');
-  if (!document.getElementById('settings').hidden) {
-    const perm = 'Notification' in window ? Notification.permission : 'unsupported';
-    document.getElementById('notify-explain').textContent = {
-      granted: 'On. When this tab is in the background, break and water reminders also appear as desktop notifications.',
-      denied: 'Blocked. Reminders only show inside this tab. To change it, allow notifications in the site settings.',
-      default: 'Off. Reminders only show inside this tab. Turn on notifications to see them while you work in other windows.',
-      unsupported: 'This browser has no desktop notifications. Reminders show inside this tab.',
-    }[perm];
-    document.getElementById('notify-actions').innerHTML = perm === 'default'
-      ? '<button class="btn btn-soft" type="button" data-action="enable-notifications">Turn on notifications</button>' : '';
-    document.getElementById('measure-explain').textContent = measureExplain(day.mode, sourceLive(), ui.sourceError);
-    document.getElementById('measure-actions').innerHTML = day.mode === 'measured' && sourceLive()
-      ? '<button class="btn btn-soft" type="button" data-action="use-manual">Switch to manual mode</button>'
-      : '<button class="btn btn-soft" type="button" data-action="retry-measured">Try measured mode</button>';
-  } else if (!form.__filled) {
+  if (!form.__filled) {
     fillSettings(form, settings);
     form.__filled = true;
   }
+  render({
+    day, settings, speed, now: Date.now(), sourceLive: sourceLive(), ui,
+    view: currentView(), device: { ...device, caps: readCapabilities(window) }, storageBytes: JSON.stringify(data).length,
+  });
 }
 
 function dispatch(event) {
@@ -94,8 +91,8 @@ function askNotifications() {
 }
 
 async function startDay() {
+  go('today');
   const src = await connectMeasured(true);
-  await askNotifications();
   if (src) {
     dispatch({ type: 'start', mode: 'measured' });
     await beginMeasured(src);
@@ -103,6 +100,7 @@ async function startDay() {
     useManual();
     dispatch({ type: 'start', mode: 'manual' });
   }
+  askNotifications();
 }
 
 async function reattach() {
@@ -135,13 +133,20 @@ function rolloverIfNeeded(t) {
   persist();
 }
 
+function notify(title, body, tag) {
+  if (!document.hidden || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const options = { body, tag, icon: 'assets/icon-192.png', badge: 'assets/icon-192.png' };
+  if (swReg) swReg.showNotification(title, options).catch(() => {});
+  else {
+    try { new Notification(title, options); } catch { /* some mobile browsers only allow service-worker notifications */ }
+  }
+}
+
 function notifyIfNeeded() {
   const p = day.prompt;
   if (!p.visible || p.shownAt === ui.lastPromptAt) return;
   ui.lastPromptAt = p.shownAt;
-  if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-    new Notification('Time for a short break', { body: 'Daywell: a few minutes away from the desk would fit nicely now.', tag: 'daywell-break', icon: 'assets/icon.svg' });
-  }
+  notify('Time for a short break', 'A few minutes away from the desk would fit nicely now.', 'daywell-break');
 }
 
 function checkWaterReminder(t) {
@@ -152,9 +157,7 @@ function checkWaterReminder(t) {
   const r = day.waterReminder;
   if (!r.visible || r.lastAt === ui.lastWaterReminderAt) return;
   ui.lastWaterReminderAt = r.lastAt;
-  if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-    new Notification('Time for some water?', { body: 'Daywell: a glass of water would fit nicely now.', tag: 'daywell-water', icon: 'assets/icon.svg' });
-  }
+  notify('Time for some water?', 'A glass of water would fit nicely now.', 'daywell-water');
 }
 
 const clearWaterReminder = (t) => ({ ...day.waterReminder, visible: false, lastAt: t });
@@ -174,7 +177,13 @@ function tick() {
 
 function showToast(text, undo) {
   const el = document.getElementById('toast');
-  el.innerHTML = `<span>${text}</span>${undo ? '<button class="btn-link" type="button" data-action="toast-undo">Undo</button>' : ''}`;
+  const label = Object.assign(document.createElement('span'), { textContent: text });
+  el.replaceChildren(label);
+  if (undo) {
+    const btn = Object.assign(document.createElement('button'), { className: 'btn-link', type: 'button', textContent: 'Undo' });
+    btn.dataset.action = 'toast-undo';
+    el.append(btn);
+  }
   el.hidden = false;
   el.__undo = undo;
   clearTimeout(ui.toastTimer);
@@ -193,17 +202,9 @@ function logWater(ml) {
   });
 }
 
-function openSettings() {
-  const drawer = document.getElementById('settings');
-  fillSettings(document.getElementById('settings-form'), settings);
-  drawer.hidden = false;
-  draw();
-  drawer.querySelector('select, input, button')?.focus();
-}
-
-function closeSettings() {
-  document.getElementById('settings').hidden = true;
-  document.getElementById('open-settings').focus();
+function go(view) {
+  if (currentView() === view && location.hash === `#${view}`) return;
+  location.hash = view;
 }
 
 const actions = {
@@ -288,8 +289,13 @@ const actions = {
     el.__undo?.();
     el.hidden = true;
   },
-  'open-settings': () => openSettings(),
-  'close-settings': () => closeSettings(),
+  'open-settings': () => go('you'),
+  step: (el) => {
+    const input = document.getElementById('settings-form').elements[el.dataset.target];
+    const next = Math.min(Number(input.max), Math.max(Number(input.min), (Number(input.value) || 0) + Number(el.dataset.delta)));
+    input.value = String(next);
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  },
   export: () => {
     persist();
     const url = URL.createObjectURL(exportBlob(data));
@@ -305,7 +311,8 @@ const actions = {
     data = { settings: { ...DEFAULT_SETTINGS }, days: {} };
     settings = data.settings;
     day = createDay(dateKey(Date.now()), Date.now());
-    closeSettings();
+    document.getElementById('settings-form').__filled = false;
+    go('today');
     draw();
   },
 };
@@ -317,7 +324,6 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !document.getElementById('settings').hidden) closeSettings();
   if (e.key === 'Enter' && e.target.matches('.list input')) {
     e.target.closest('li').querySelector('[data-action=water-save]')?.click();
   }
@@ -368,6 +374,8 @@ document.getElementById('cal-form').addEventListener('submit', (e) => {
   draw();
 });
 
+document.getElementById('settings-form').addEventListener('input', (e) => syncOutputs(e.currentTarget));
+document.getElementById('settings-form').addEventListener('submit', (e) => e.preventDefault());
 document.getElementById('settings-form').addEventListener('change', (e) => {
   settings = readSettings(e.currentTarget, settings);
   persist();
@@ -380,6 +388,15 @@ const flush = () => {
 };
 document.addEventListener('visibilitychange', () => document.hidden && flush());
 window.addEventListener('pagehide', flush);
+
+window.addEventListener('hashchange', () => {
+  draw();
+  if (VIEWS.includes(location.hash.slice(1))) window.scrollTo({ top: 0 });
+});
+
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register('sw.js').then((reg) => { swReg = reg; }).catch(() => {});
+}
 
 const bootNow = Date.now();
 if (day.started && bootNow - day.lastSeen > 10_000) day = reduce(day, { type: 'closeGap', t: bootNow }, engineSettings());
