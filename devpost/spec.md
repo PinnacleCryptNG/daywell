@@ -64,7 +64,7 @@ PRD ref: `prd.md > States and Boundaries`, `prd.md > Settings and data`.
 Pure `add`, `remove`, `edit`, `total`. PRD ref: `prd.md > Water logging`.
 
 ### Habits (`src/habits.js`)
-Pure ops for manual steps (`setSteps`, `latestSteps`) and the optional calorie log (`addCalories`, `removeCalories`, `caloriesTotal`). PRD ref: `prd.md > Steps (manual)`, `prd.md > Calories (optional)`.
+Pure ops for the optional calorie log; the manual-steps helpers (`setSteps`, `latestSteps`) remain but are no longer used by the UI (see Revision below). The calorie log (`addCalories`, `removeCalories`, `caloriesTotal`). PRD ref: `prd.md > Steps (manual)`, `prd.md > Calories (optional)`.
 
 ### Water reminders (`src/water.js > waterReminderDue`)
 Pure check of interval since the last glass/reminder, work hours, cap, and that no break prompt is showing. PRD ref: `prd.md > Water reminders`.
@@ -79,7 +79,7 @@ Strict Content-Security-Policy (meta tag, plus headers from the dev server): scr
 Pure summary of a day record → counts and copy strings; "No data" for empty metrics. PRD ref: `prd.md > Daily reflection`.
 
 ### Interface (`index.html`, `styles.css`, `src/app.js`, `src/ui/*.js`)
-A landing page (`#home`, shown to first-time visitors and via the logo) with an animated hero, scroll-reveal sections via `IntersectionObserver`, and Start my day / Open my day calls to action. Four hash-routed views: **Today** (hero ring, at-a-glance tiles, screen time and timeline, wrap-up), **Move** (breaks, steps), **Hydrate** (water drop, calories), **You** ("Your rhythm" preferences, This device, Privacy & data). Tabs sit in the top bar on desktop and become a bottom tab bar under 760 px. Break, water and welcome-back nudges render as cards at the top of the current view. One `render(state)` driven by a 1 s tick plus events. Light/dark/auto theme via `data-theme`. Tab title and optional notification when hidden.
+A landing page (`#home`, shown to first-time visitors and via the logo) with an animated hero, scroll-reveal sections via `IntersectionObserver`, and Start my day / Open my day calls to action. Four hash-routed views: **Today** (hero ring, at-a-glance tiles, screen time and timeline, wrap-up), **Move** (breaks), **Hydrate** (water drop, calories), **You** ("Your rhythm" preferences, This device, Privacy & data). Tabs sit in the top bar on desktop and become a bottom tab bar under 760 px. Break, water and welcome-back nudges render as cards at the top of the current view. One `render(state)` driven by a 1 s tick plus events. Light/dark/auto theme via `data-theme`. Tab title and optional notification when hidden.
 PRD ref: `prd.md > Screens and Layout`, `prd.md > Today's timeline`.
 
 ## Data Model

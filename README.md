@@ -93,6 +93,13 @@ tests/                     node --test suites
 - Screen time covers only this computer while Daywell is open; time when it's closed shows as *not tracked*.
 - A browser can't count steps or read phone screen time, so neither is included. A native phone app is on the roadmap.
 
+## What's next
+
+- **Phone app** (Android first, via Health Connect): real phone screen time and automatic step counting, synced into the same day format.
+- **Desktop companion** (Tauri): whole-computer screen time and reminders that work with the browser closed.
+- **Weekly and monthly insights** from the days already stored locally.
+- **Optional, opt-in sync** between devices.
+
 ## Built with the Devpost Learn skill pack
 
 Made for [Build With AI: Basics](https://learn-ai-basics.devpost.com/). The planning documents are in [`devpost/`](devpost/): [scope](devpost/scope.md), [PRD](devpost/prd.md), [spec](devpost/spec.md) and the [build checklist](devpost/checklist.md).

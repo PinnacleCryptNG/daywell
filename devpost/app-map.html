@@ -41,7 +41,7 @@
     <ul>
       <li><strong>Signal sources</strong> tell Daywell whether you're at the desk: <code>src/sources/idle.js</code> (Chrome/Edge idle detection) or <code>src/sources/manual.js</code> (the "I'm stepping away / at my desk" buttons).</li>
       <li><strong>The engine</strong>, <code>src/engine.js</code>, is pure logic: events in, a new day record out. It owns sitting stretches, breaks, prompts, snooze, pause, work hours and the daily cap.</li>
-      <li><strong>Helpers</strong>: <code>src/water.js</code> (water log and reminder rule), <code>src/habits.js</code> (steps, calories), <code>src/reflection.js</code> (end-of-day summary), <code>src/device.js</code> (what this browser can do).</li>
+      <li><strong>Helpers</strong>: <code>src/water.js</code> (water log and reminder rule), <code>src/habits.js</code> (calories), <code>src/reflection.js</code> (end-of-day summary), <code>src/device.js</code> (what this browser can do).</li>
       <li><strong>Storage</strong>, <code>src/store.js</code>, keeps everything in this browser's <code>localStorage</code> and validates it on load. No server.</li>
       <li><strong>The interface</strong>: <code>index.html</code> + <code>styles.css</code> for structure and look, <code>src/ui/render.js</code> draws the views, <code>src/app.js</code> wires it all together on a 1-second tick.</li>
     </ul>
@@ -90,7 +90,7 @@
       <tr><th>You want to change…</th><th>Start here</th></tr>
       <tr><td>The landing headline or copy</td><td><code>index.html</code>, search <code>welcome-title</code> and the <code>lp-section</code> blocks</td></tr>
       <tr><td>The break ideas in the nudge</td><td><code>src/ui/render.js</code>, <code>SUGGESTIONS</code></td></tr>
-      <tr><td>Default threshold, water target, step goal</td><td><code>src/store.js</code>, <code>DEFAULT_SETTINGS</code> (and limits in <code>LIMITS</code>)</td></tr>
+      <tr><td>Default threshold, water target</td><td><code>src/store.js</code>, <code>DEFAULT_SETTINGS</code> (and limits in <code>LIMITS</code>)</td></tr>
       <tr><td>When water reminders fire</td><td><code>src/water.js</code>, <code>waterReminderDue</code>; tests in <code>tests/water.test.js</code></td></tr>
       <tr><td>Whether nudges respect work hours</td><td><code>src/engine.js</code>, <code>canNudgeNow</code></td></tr>
       <tr><td>Colors, spacing, dark mode</td><td><code>styles.css</code>, the <code>:root</code> and <code>[data-theme='dark']</code> variables</td></tr>

@@ -88,7 +88,7 @@ button, input, select { font: inherit; color: inherit; }
 .tabs a[aria-current='page'] .i { color: var(--cyan); }
 .tabs .i { width: 18px; height: 18px; }
 
-.demo-banner { position: relative; background: linear-gradient(90deg, rgba(34, 211, 238, .16), rgba(49, 87, 255, .14)); color: var(--cyan-deep); text-align: center; font-weight: 700; font-size: .85rem; padding: 8px 16px; }
+.demo-banner { position: relative; background: linear-gradient(90deg, rgba(34, 211, 238, .16), rgba(49, 87, 255, .14)), var(--bg); color: var(--cyan-deep); text-align: center; font-weight: 700; font-size: .85rem; padding: 8px 16px; }
 .demo-banner a { color: inherit; }
 
 .page { max-width: 1120px; margin: 0 auto; padding: 28px 24px 64px; }
