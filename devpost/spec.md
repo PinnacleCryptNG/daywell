@@ -86,14 +86,14 @@ PRD ref: `prd.md > Screens and Layout`, `prd.md > Today's timeline`.
 ```js
 settings = { thresholdMin: 50, minBreakMin: 2, workStart: "09:00", workEnd: "17:00",
              workDays: [1,2,3,4,5], dailyCap: 8, waterTargetMl: 2000,
-             stepGoal: 10000, caloriesEnabled: false, waterReminderMin: 90, waterReminderCap: 4, speed: 1 }
+             stepGoal: 10000 (legacy, unused by UI), caloriesEnabled: false, waterReminderMin: 90, waterReminderCap: 4, speed: 1 }
 day = {
   date: "2026-10-20",
   mode: "measured" | "manual" | null,
   segments: [{ kind: "desk"|"away"|"untracked", start, end|null, source }],
   breaks:   [{ id, start, end, durationMs, source: "measured"|"manual"|"reported" }],
   water:    [{ id, at, ml }],
-  steps:    [{ id, at, total }],          // manual, latest wins
+  steps:    [{ id, at, total }],          // legacy manual steps, unused by UI since the revision
   calories: [{ id, at, kcal, note }],     // only used when enabled
   waterReminder: { visible, shownCount, lastAt },
   prompt:   { visible, shownCount, snoozeUntilSittingMs|null, pausedForDay },
@@ -118,7 +118,7 @@ daywell/
 │   ├── app.js            # wiring: store ⇄ engine ⇄ sources ⇄ ui, 1 s tick
 │   ├── engine.js         # pure desk-time logic
 │   ├── water.js          # pure water log ops + reminder rule
-│   ├── habits.js         # pure steps + calorie ops
+│   ├── habits.js         # pure calorie ops (+ legacy step helpers)
 │   ├── reflection.js     # pure day summary
 │   ├── store.js          # localStorage persistence
 │   ├── time.js           # day keys, work-hours, formatting
