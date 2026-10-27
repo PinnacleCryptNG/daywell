@@ -517,3 +517,96 @@ input[type='range'] { width: 100%; accent-color: var(--blue); height: 28px; curs
   .f4 { display: none; }
 }
 html { scroll-behavior: smooth; }
+
+/* Daywell buddy: animated reminder scenes */
+:root { --bd-skin: #A8693F; --bd-hair: #2A1A12; --bd-pants: #24324F; --bd-cooler: #E2E8F0; --bd-panel: #CBD5E1; --bd-desk: #C8935B; --bd-stage: linear-gradient(180deg, var(--cyan-soft), var(--blue-soft)); }
+:root[data-theme='dark'] { --bd-pants: #3B4A6B; --bd-cooler: #CBD5E1; --bd-panel: #94A3B8; --bd-desk: #9A6B3E; --bd-stage: linear-gradient(180deg, #12324A, #172042); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --bd-pants: #3B4A6B; --bd-cooler: #CBD5E1; --bd-panel: #94A3B8; --bd-desk: #9A6B3E; --bd-stage: linear-gradient(180deg, #12324A, #172042); } }
+.buddy-stage { margin: -20px -20px 16px; padding: 14px 12px 4px; background: var(--bd-stage); display: flex; justify-content: center; }
+.buddy { display: block; width: 100%; max-width: 280px; height: auto; overflow: hidden; }
+.buddy * { transform-box: view-box; }
+.bd-ground { fill: color-mix(in srgb, var(--ink) 9%, transparent); }
+.bd-skin { fill: var(--bd-skin); }
+.bd-hair { fill: var(--bd-hair); }
+.bd-eye { fill: #0F172A; }
+.bd-smile { fill: none; stroke: #0F172A; stroke-width: 1.6; stroke-linecap: round; }
+.bd-cheek { fill: #F472B6; opacity: .35; }
+.bd-shirt { fill: var(--blue); }
+.bd-limb { fill: none; stroke: var(--bd-skin); stroke-width: 6; stroke-linecap: round; }
+.bd-pants { fill: none; stroke: var(--bd-pants); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.bd-heart { fill: #F43F5E; opacity: 0; }
+.bd-bottle { fill: color-mix(in srgb, var(--cyan) 22%, #fff); stroke: color-mix(in srgb, var(--cyan) 60%, transparent); stroke-width: 1.5; }
+.bd-bottle-water { fill: var(--cyan); opacity: .75; }
+.bd-bubble { fill: #fff; opacity: 0; }
+.bd-cooler { fill: var(--bd-cooler); }
+.bd-cooler-panel { fill: var(--bd-panel); }
+.bd-tap { fill: var(--blue-deep); }
+.bd-stream { fill: var(--cyan); opacity: 0; }
+.bd-glass-body { fill: rgba(255, 255, 255, .55); stroke: #94A3B8; stroke-width: 1.2; stroke-linejoin: round; }
+.bd-glass-water { fill: var(--cyan); }
+.bd-laptop { fill: #64748B; }
+.bd-laptop-dot { fill: #E2E8F0; }
+.bd-mug { fill: var(--violet); }
+.bd-mug-handle { fill: none; stroke: var(--violet); stroke-width: 2; }
+.bd-desk, .bd-desk-leg { fill: var(--bd-desk); }
+.bd-desk-panel { fill: color-mix(in srgb, var(--bd-desk) 78%, #000); }
+.bd-spark path { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-linecap: round; }
+.bd-spark { opacity: 0; }
+
+/* Drink: walk in, fill a glass, drink, smile (7s, plays twice then rests) */
+.buddy-drink * { animation-duration: 7s; animation-iteration-count: 2; animation-fill-mode: both; animation-timing-function: ease-in-out; }
+.buddy-drink.once * { animation-iteration-count: 1; }
+.buddy-drink .bd-walker { animation-name: bd-walk; animation-timing-function: linear; }
+.buddy-drink .bd-bob { animation-name: bd-bob; }
+.buddy-drink .bd-leg { transform-origin: 70px 80px; }
+.buddy-drink .bd-leg-b { animation-name: bd-swing-a; }
+.buddy-drink .bd-leg-f { animation-name: bd-swing-b; }
+.buddy-drink .bd-arm-b { transform-origin: 64px 54px; animation-name: bd-swing-a; }
+.buddy-drink .bd-arm-f { transform-origin: 78px 54px; animation-name: bd-drink-arm; }
+.buddy-drink .bd-glass { transform-origin: 78px 78px; animation-name: bd-drink-glass; }
+.buddy-drink .bd-glass-water { transform-origin: 82px 80.5px; animation-name: bd-glass-fill; }
+.buddy-drink .bd-head { transform-origin: 71px 44px; animation-name: bd-drink-head; }
+.buddy-drink .bd-stream { animation-name: bd-stream; }
+.buddy-drink .bd-bubble { transform-origin: 124px 26px; animation-name: bd-bubble; }
+.buddy-drink .bd-heart { transform-origin: 92px 10px; animation-name: bd-heart; }
+@keyframes bd-walk { 0% { transform: translateX(-112px); } 28%, 100% { transform: translateX(0); } }
+@keyframes bd-bob { 0%, 7%, 14%, 21%, 28%, 100% { transform: translateY(0); } 3.5%, 10.5%, 17.5%, 24.5% { transform: translateY(-2px); } }
+@keyframes bd-swing-a { 0%, 7%, 14%, 21% { transform: rotate(18deg); } 3.5%, 10.5%, 17.5%, 24.5% { transform: rotate(-18deg); } 28%, 100% { transform: rotate(0); } }
+@keyframes bd-swing-b { 0%, 7%, 14%, 21% { transform: rotate(-18deg); } 3.5%, 10.5%, 17.5%, 24.5% { transform: rotate(18deg); } 28%, 100% { transform: rotate(0); } }
+@keyframes bd-drink-arm { 0%, 7%, 14%, 21% { transform: rotate(-16deg); } 3.5%, 10.5%, 17.5%, 24.5% { transform: rotate(16deg); } 28% { transform: rotate(0); } 34%, 50% { transform: rotate(-60deg); } 58%, 76% { transform: rotate(-132deg); } 86%, 100% { transform: rotate(0); } }
+@keyframes bd-drink-glass { 0%, 7%, 14%, 21% { transform: rotate(16deg); } 3.5%, 10.5%, 17.5%, 24.5% { transform: rotate(-16deg); } 28% { transform: rotate(0); } 34%, 50% { transform: rotate(60deg); } 58%, 76% { transform: rotate(92deg); } 86%, 100% { transform: rotate(0); } }
+@keyframes bd-glass-fill { 0%, 36% { transform: scaleY(0); } 48%, 60% { transform: scaleY(1); } 76%, 100% { transform: scaleY(.08); } }
+@keyframes bd-drink-head { 0%, 56% { transform: rotate(0); } 62%, 74% { transform: rotate(-14deg); } 82%, 100% { transform: rotate(0); } }
+@keyframes bd-stream { 0%, 36% { opacity: 0; } 37%, 47% { opacity: 1; } 48%, 100% { opacity: 0; } }
+@keyframes bd-bubble { 0%, 37% { opacity: 0; transform: translateY(0); } 40% { opacity: .9; } 47%, 100% { opacity: 0; transform: translateY(-12px); } }
+@keyframes bd-heart { 0%, 84% { opacity: 0; transform: translateY(6px) scale(.4); } 90% { opacity: 1; transform: translateY(0) scale(1.1); } 96% { opacity: 1; transform: translateY(-2px) scale(1); } 100% { opacity: 0; transform: translateY(-8px) scale(1); } }
+
+/* Stretch: stand up from the desk, reach up, side bends (8s, plays twice then rests) */
+.buddy-stretch * { animation-duration: 8s; animation-iteration-count: 2; animation-fill-mode: both; animation-timing-function: ease-in-out; }
+.buddy-stretch .bd-riser { animation-name: bd-rise; }
+.buddy-stretch .bd-upper { transform-origin: 100px 90px; animation-name: bd-bend; }
+.buddy-stretch .bd-arm-l { transform-origin: 89px 52px; animation-name: bd-reach-l; }
+.buddy-stretch .bd-arm-r { transform-origin: 111px 52px; animation-name: bd-reach-r; }
+.buddy-stretch .bd-eyes { transform-origin: 100px 27px; animation-name: bd-blink; }
+.buddy-stretch .bd-spark { animation-name: bd-spark; }
+.buddy-stretch .bd-spark-r { animation-delay: .25s; }
+.buddy-stretch .bd-heart { transform-origin: 132px 22px; animation-name: bd-heart; }
+@keyframes bd-rise { 0%, 14% { transform: translateY(18px); } 24%, 88% { transform: translateY(0); } 92% { transform: translateY(-4px); } 96%, 100% { transform: translateY(0); } }
+@keyframes bd-bend { 0%, 46% { transform: rotate(0); } 54%, 60% { transform: rotate(-13deg); } 68%, 74% { transform: rotate(13deg); } 82%, 100% { transform: rotate(0); } }
+@keyframes bd-reach-l { 0%, 14% { transform: rotate(-28deg); } 24% { transform: rotate(0); } 34%, 76% { transform: rotate(162deg); } 84% { transform: rotate(90deg); } 92%, 100% { transform: rotate(0); } }
+@keyframes bd-reach-r { 0%, 14% { transform: rotate(28deg); } 24% { transform: rotate(0); } 34%, 76% { transform: rotate(-162deg); } 84% { transform: rotate(-90deg); } 92%, 100% { transform: rotate(0); } }
+@keyframes bd-blink { 0%, 34%, 78%, 100% { transform: scaleY(1); } 38%, 74% { transform: scaleY(.15); } }
+@keyframes bd-spark { 0%, 36% { opacity: 0; transform: scale(.4); } 42%, 70% { opacity: 1; transform: scale(1); } 78%, 100% { opacity: 0; transform: scale(.4); } }
+
+.water-cheer { margin-top: 14px; border-radius: 18px; overflow: hidden; background: var(--bd-stage); padding: 10px 12px 2px; display: flex; justify-content: center; }
+.water-cheer[hidden] { display: none; }
+.water-cheer .buddy { max-width: 220px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .buddy-stretch .bd-arm-l { transform: rotate(162deg); }
+  .buddy-stretch .bd-arm-r { transform: rotate(-162deg); }
+}
+@media (max-width: 640px) {
+  .buddy-stage { padding: 10px 10px 2px; margin-bottom: 12px; }
+  .buddy { max-width: 210px; }
+}

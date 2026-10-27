@@ -1,6 +1,7 @@
 import { canNudgeNow, createDay, normalizeDay, openSegment, reduce, status } from './engine.js';
 import { DEFAULT_SETTINGS, clearData, exportBlob, loadData, saveData } from './store.js';
 import { dateKey } from './time.js';
+import { drinkScene } from './ui/buddy.js';
 import { addWater, editWater, removeWater, validAmount, waterReminderDue } from './water.js';
 import { addCalories, removeEntry, validKcal } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
@@ -18,7 +19,7 @@ let day = normalizeDay(data.days[dateKey(Date.now())] ?? createDay(dateKey(Date.
 let source = null;
 const device = detectDevice(window);
 let swReg = null;
-const ui = { editingWaterId: null, sourceError: null, toastTimer: null, lastPromptAt: null, lastWaterReminderAt: null };
+const ui = { editingWaterId: null, sourceError: null, toastTimer: null, cheerTimer: null, lastPromptAt: null, lastWaterReminderAt: null };
 
 const engineSettings = () => ({ ...settings, speed });
 const sourceLive = () => Boolean(source && source.kind === 'measured');
@@ -222,11 +223,20 @@ function logWater(ml) {
   day = { ...day, water: entries, waterReminder: clearWaterReminder(entry.at) };
   persist();
   draw();
+  cheer();
   showToast(`Logged ${entry.ml} ml of water.`, () => {
     day = { ...day, water: removeWater(day.water, entry.id) };
     persist();
     draw();
   });
+}
+
+function cheer() {
+  const el = document.getElementById('water-cheer');
+  clearTimeout(ui.cheerTimer);
+  el.innerHTML = drinkScene().replace('class="buddy buddy-drink"', 'class="buddy buddy-drink once"');
+  el.hidden = false;
+  ui.cheerTimer = setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 7200);
 }
 
 function go(view) {
