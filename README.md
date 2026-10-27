@@ -48,7 +48,7 @@ npm test         # 32 unit tests
 
 Open `http://localhost:5173`, press **Start my day**, and allow idle detection when asked. Measured mode needs `localhost` or HTTPS; opening `index.html` straight from disk won't enable it.
 
-**Demo speed:** `http://localhost:5173/?speed=60` runs break and reminder thresholds 60× faster (50 minutes takes 50 seconds) for recording. A banner shows while it's on. Idle detection and measured durations stay real.
+**Demo speed:** `http://localhost:5173/?speed=60` runs break and reminder thresholds 60× faster (50 minutes takes 50 seconds) for recording. You can also switch it on and off under **You → Demo speed**. A banner with an *Exit demo speed* link shows while it's on. Idle detection and measured durations stay real.
 
 ## Deploy
 

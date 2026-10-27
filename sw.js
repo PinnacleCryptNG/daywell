@@ -1,4 +1,4 @@
-const CACHE = 'daywell-v2';
+const CACHE = 'daywell-v3';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => {

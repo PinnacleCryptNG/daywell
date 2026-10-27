@@ -85,7 +85,7 @@ function renderChrome(ctx, landing) {
   const demo = $('demo-banner');
   demo.hidden = ctx.speed === 1;
   if (ctx.speed !== 1) {
-    patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Work hours are ignored. Idle detection and durations are real. <a href="./">Exit demo speed</a>`);
+    patch(demo, `Demo speed ×${ctx.speed}: break thresholds run ${ctx.speed}× faster for recording. Work hours are ignored. Idle detection and durations are real. <a href="./#${view}">Exit demo speed</a>`);
   }
   const promptUp = day.prompt.visible;
   const waterUp = day.waterReminder?.visible;
@@ -417,5 +417,12 @@ function renderYou(ctx) {
   $('notify-explain').textContent = notificationAdvice(device);
   patch($('notify-actions'), caps.notifications === 'default'
     ? `<button class="btn btn-soft" type="button" data-action="enable-notifications">${icon('bell')}Turn on notifications</button>` : '');
+  const { speed, view } = ctx;
+  $('demo-explain').textContent = speed === 1
+    ? `Want to see a break nudge and the water buddy without waiting? Demo speed makes reminders come 60× faster: your ${settings.thresholdMin}-minute break nudge arrives in about ${settings.thresholdMin} seconds. Your real time is still measured.`
+    : `Demo speed ×${speed} is on: reminders come ${speed}× faster and work hours are ignored. Turn it off to get back to your normal rhythm.`;
+  patch($('demo-actions'), speed === 1
+    ? `<a class="btn btn-soft" href="./?speed=60#${view}">${icon('sparkle')}Turn on demo speed</a>`
+    : `<a class="btn btn-soft" href="./#${view}">${icon('x')}Turn off demo speed</a>`);
   $('storage-size').textContent = `Using ${(storageBytes / 1024).toFixed(1)} KB in this browser.`;
 }
