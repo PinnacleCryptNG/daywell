@@ -6,13 +6,15 @@ import { createDay } from '../src/engine.js';
 const memory = (value) => ({ getItem: () => value });
 
 test('settings outside their limits fall back to defaults', () => {
-  const s = sanitizeSettings({ thresholdMin: 9999, dailyCap: 'lots', workStart: '25:00', workEnd: '18:30', workDays: [1, 1, 9, 'x', 3], theme: 'neon', caloriesEnabled: 'yes', stepGoal: 8000 });
+  const s = sanitizeSettings({ thresholdMin: 9999, dailyCap: 'lots', workStart: '25:00', workEnd: '18:30', workDays: [1, 1, 9, 'x', 3], theme: 'neon', buddyStyle: 'claymation', caloriesEnabled: 'yes', stepGoal: 8000 });
   assert.equal(s.thresholdMin, DEFAULT_SETTINGS.thresholdMin);
   assert.equal(s.dailyCap, DEFAULT_SETTINGS.dailyCap);
   assert.equal(s.workStart, DEFAULT_SETTINGS.workStart);
   assert.equal(s.workEnd, '18:30');
   assert.deepEqual(s.workDays, [1, 3]);
   assert.equal(s.theme, 'system');
+  assert.equal(s.buddyStyle, 'cartoon');
+  assert.equal(sanitizeSettings({ buddyStyle: 'pixel' }).buddyStyle, 'pixel');
   assert.equal(s.caloriesEnabled, false);
   assert.equal(s.stepGoal, 8000);
 });

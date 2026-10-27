@@ -1,7 +1,7 @@
 import { canNudgeNow, createDay, normalizeDay, openSegment, reduce, status } from './engine.js';
 import { DEFAULT_SETTINGS, clearData, exportBlob, loadData, saveData } from './store.js';
 import { dateKey } from './time.js';
-import { drinkScene } from './ui/buddy.js';
+import { mountBuddy, preloadBuddy, sceneDuration } from './ui/buddy.js';
 import { addWater, editWater, removeWater, validAmount, waterReminderDue } from './water.js';
 import { addCalories, removeEntry, validKcal } from './habits.js';
 import { createIdleSource } from './sources/idle.js';
@@ -234,9 +234,9 @@ function logWater(ml) {
 function cheer() {
   const el = document.getElementById('water-cheer');
   clearTimeout(ui.cheerTimer);
-  el.innerHTML = drinkScene().replace('class="buddy buddy-drink"', 'class="buddy buddy-drink once"');
   el.hidden = false;
-  ui.cheerTimer = setTimeout(() => { el.hidden = true; el.innerHTML = ''; }, 7200);
+  mountBuddy(el, 'drink', settings.buddyStyle, { loops: 1 });
+  ui.cheerTimer = setTimeout(() => { el.hidden = true; el.replaceChildren(); }, sceneDuration('drink', settings.buddyStyle) + 300);
 }
 
 function go(view) {
@@ -395,6 +395,7 @@ document.getElementById('settings-form').addEventListener('submit', (e) => e.pre
 document.getElementById('settings-form').addEventListener('change', (e) => {
   settings = readSettings(e.currentTarget, settings);
   persist();
+  preloadBuddy(settings.buddyStyle);
   draw();
 });
 
@@ -418,5 +419,6 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
 const bootNow = Date.now();
 if (day.started && bootNow - day.lastSeen > 10_000) day = reduce(day, { type: 'closeGap', t: bootNow }, engineSettings());
 draw();
+preloadBuddy(settings.buddyStyle);
 if (day.started) reattach();
 setInterval(tick, 1000);

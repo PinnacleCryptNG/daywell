@@ -22,7 +22,7 @@ A calm browser companion for remote workers: it notices how long you've actually
 - **One gentle nudge at a time.** After about 50 minutes of continuous sitting, during work hours, capped per day. Done, snooze or pause for today.
 - **Screen time on this computer**, measured from the same signal. Phones, other devices and per-app usage are not included, and the app says so.
 - **Water**: one-tap logging plus reminders that count from your last glass and never pile up.
-- **An animated buddy in every reminder.** When it's time for water, a little character walks to a water cooler, fills a glass and drinks. When it's time to move, it stands up from the desk and stretches. Each scene plays a couple of times as the reminder appears, then rests; with reduced motion turned on, it shows a still pose instead.
+- **An animated character in every reminder.** When it's time for water, she walks in, drinks from her bottle and walks back out. When it's time to move, she walks in and stretches: arms overhead, a side bend each way and a shoulder stretch. Each scene plays a couple of times as the reminder appears, then rests on a standing pose; with reduced motion turned on, it shows a still pose instead. Pick **Cartoon** or **Pixel** under You → Appearance.
 - **Calories (optional)**: off by default, manual entries only, no targets.
 - **Honest numbers.** Every value is labelled *Measured*, *Manual* or *Reported*. Missing data shows as "No data", never as zero.
 

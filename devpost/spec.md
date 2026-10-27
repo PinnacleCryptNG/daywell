@@ -128,7 +128,8 @@ daywell/
 │   │   └── manual.js     # manual fallback
 │   └── ui/
 │       ├── render.js     # view rendering
-│       ├── buddy.js      # animated SVG reminder scenes (drink, stretch)
+│       ├── buddy.js      # canvas sprite player for the reminder character (drink, stretch)
+│       ├── buddy-scenes.js # generated sprite timelines (cartoon, pixel)
 │       └── settings.js   # Your rhythm form + summaries
 ├── tests/                # node --test suites for engine/water/habits/reflection/time/store/device
 ├── scripts/serve.mjs     # zero-dependency static server

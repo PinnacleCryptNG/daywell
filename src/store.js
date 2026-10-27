@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   waterReminderMin: 90,
   waterReminderCap: 4,
   theme: 'system',
+  buddyStyle: 'cartoon',
 });
 
 const LIMITS = {
@@ -36,6 +37,7 @@ export function sanitizeSettings(raw) {
   if (Array.isArray(raw.workDays)) out.workDays = [...new Set(raw.workDays.filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))];
   if (typeof raw.caloriesEnabled === 'boolean') out.caloriesEnabled = raw.caloriesEnabled;
   if (['system', 'light', 'dark'].includes(raw.theme)) out.theme = raw.theme;
+  if (['cartoon', 'pixel'].includes(raw.buddyStyle)) out.buddyStyle = raw.buddyStyle;
   return out;
 }
 

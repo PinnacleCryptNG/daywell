@@ -1,5 +1,6 @@
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const THEMES = ['system', 'light', 'dark'];
+const BUDDY_STYLES = ['cartoon', 'pixel'];
 const OUT = {
   thresholdMin: (v) => `${v} min`,
   waterTargetMl: (v) => `${Number(v).toLocaleString()} ml`,
@@ -20,6 +21,7 @@ export function fillSettings(form, settings) {
   form.waterReminderCap.value = String(settings.waterReminderCap);
   form.caloriesEnabled.checked = settings.caloriesEnabled;
   form.theme.value = settings.theme;
+  form.buddyStyle.value = settings.buddyStyle;
   document.getElementById('work-days').innerHTML = [1, 2, 3, 4, 5, 6, 0].map((d) => `
     <label><input type="checkbox" name="workDay" value="${d}" ${settings.workDays.includes(d) ? 'checked' : ''}><span>${DAYS[d]}</span></label>`).join('');
   syncOutputs(form);
@@ -43,6 +45,7 @@ export function readSettings(form, previous) {
     waterReminderCap: num(form.waterReminderCap.value, 1, 12, previous.waterReminderCap),
     caloriesEnabled: form.caloriesEnabled.checked,
     theme: THEMES.includes(form.theme.value) ? form.theme.value : previous.theme,
+    buddyStyle: BUDDY_STYLES.includes(form.buddyStyle.value) ? form.buddyStyle.value : previous.buddyStyle,
   };
 }
 

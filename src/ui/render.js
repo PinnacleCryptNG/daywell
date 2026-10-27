@@ -5,7 +5,7 @@ import { caloriesTotal } from '../habits.js';
 import { summarize } from '../reflection.js';
 import { deviceAdvice, notificationAdvice } from '../device.js';
 import { measureExplain, rhythmSummary } from './settings.js';
-import { SCENES } from './buddy.js';
+import { mountBuddy } from './buddy.js';
 
 const $ = (id) => document.getElementById(id);
 const RING = 2 * Math.PI * 52;
@@ -29,11 +29,13 @@ function patch(el, html) {
 }
 
 // Keeps the buddy animation mounted while the card text around it updates.
-function patchWithBuddy(el, scene, html, cardClass = '') {
-  if (el.__scene !== scene) {
+function patchWithBuddy(el, scene, style, html, cardClass = '') {
+  const key = `${scene}:${style}`;
+  if (el.__scene !== key) {
     const open = cardClass ? `<div class="${cardClass}">` : '';
-    el.innerHTML = `${open}<div class="buddy-stage" aria-hidden="true">${SCENES[scene]()}</div><div class="nudge-body"></div>${cardClass ? '</div>' : ''}`;
-    el.__scene = scene;
+    el.innerHTML = `${open}<div class="buddy-stage" aria-hidden="true"></div><div class="nudge-body"></div>${cardClass ? '</div>' : ''}`;
+    mountBuddy(el.querySelector('.buddy-stage'), scene, style);
+    el.__scene = key;
     el.__html = null;
   }
   patch(el.querySelector('.nudge-body'), html);
@@ -195,7 +197,7 @@ function renderHero(ctx) {
   if (!p.visible) clearBuddy(promptEl);
   else {
     const tip = SUGGESTIONS[(p.shownCount - 1 + SUGGESTIONS.length) % SUGGESTIONS.length];
-    patchWithBuddy(promptEl, 'stretch', `
+    patchWithBuddy(promptEl, 'stretch', ctx.settings.buddyStyle, `
       <div class="nudge-head"><span class="ico ico-blue">${icon('move')}</span>
         <div><h3>You've been sitting for ${formatDuration(sit)}.</h3><p>${tip}</p></div></div>
       <div class="nudge-actions">
@@ -353,7 +355,7 @@ function renderWaterReminder(ctx) {
     return;
   }
   const last = lastWaterAt(day);
-  patchWithBuddy($('water-reminder'), 'drink', `<div class="nudge-head"><span class="ico ico-cyan">${icon('drop')}</span>
+  patchWithBuddy($('water-reminder'), 'drink', settings.buddyStyle, `<div class="nudge-head"><span class="ico ico-cyan">${icon('drop')}</span>
     <div><h3>Time for some water?</h3><p>${last ? `Your last glass was at ${formatClock(last)}.` : 'Nothing logged yet today.'}</p></div></div>
     <div class="nudge-actions"><button class="btn btn-primary" type="button" data-action="water-remind-log">${icon('drop')}+250 ml</button>
     <button class="btn-link" type="button" data-action="water-remind-dismiss">Not now</button></div>`, 'nudge');
